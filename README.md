@@ -1,2 +1,2 @@
 # project-exquis-literary-app-front
-App to create collaborative stories, front repository (React)
+App to write collaborative stories, front repository (React)
