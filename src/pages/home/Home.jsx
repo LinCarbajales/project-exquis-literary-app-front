@@ -1,7 +1,5 @@
 import React from 'react';
 import './Home.css';
-import Header from '../../components/header/Header';
-import Footer from '../../components/footer/Footer';
 import Button from '../../components/Button/Button';
 
 const Home = () => {
@@ -26,7 +24,7 @@ const Home = () => {
             </p>
             <div className="hero-actions">
               <Button 
-                to="/register" 
+                to="/participate" 
                 variant="primary" 
                 size="medium"
                 icon="✍️"
