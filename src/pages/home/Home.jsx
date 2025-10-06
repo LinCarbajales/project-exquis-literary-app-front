@@ -1,6 +1,8 @@
 import React from 'react';
 import './Home.css';
-import { Link } from 'react-router-dom';
+import Header from '../../components/header/Header';
+import Footer from '../../components/footer/Footer';
+import Button from '../../components/Button/Button';
 
 const Home = () => {
   return (
@@ -9,14 +11,35 @@ const Home = () => {
       <main className="main-content">
         <section className="hero">
           <div className="hero-content">
-            <h2 className="hero-title">Historias Colaborativas</h2>
+            <div className="hero-logo">
+              <div className="hero-logo-main-wrapper">
+                <h1 className="hero-logo-main">Exquis</h1>
+                <div className="hero-logo-decoration">
+                  <span className="hero-quill">🖋️</span>
+                  <div className="hero-ink-drop"></div>
+                </div>
+              </div>
+              <p className="hero-logo-subtitle">Historias Colaborativas</p>
+            </div>
             <p className="hero-subtitle">
-              Únete a la magia de la escritura colectiva. Cada línea es un misterio, 
-              cada historia una aventura compartida.
+              Escribe parte de una historia sin conocer nada más que la última línea.
             </p>
             <div className="hero-actions">
-              <Link to="/register" className="btn btn-primary">Comenzar a Escribir</Link>
-              <Link to="/about" className="btn btn-secondary">Conocer Más</Link>
+              <Button 
+                to="/register" 
+                variant="primary" 
+                size="medium"
+                icon="✍️"
+              >
+                Comenzar a Escribir
+              </Button>
+              <Button 
+                to="/about" 
+                variant="secondary" 
+                size="medium"
+              >
+                Conocer Más
+              </Button>
             </div>
           </div>
           <div className="hero-illustration">
@@ -45,7 +68,7 @@ const Home = () => {
               <div className="feature-card">
                 <div className="feature-icon">📖</div>
                 <h4>Descubre</h4>
-                <p>Lee las historias completas y conoce a los autores que participaron.</p>
+                <p>Lee las historias completas compartidas públicamente.</p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">👥</div>
@@ -56,7 +79,7 @@ const Home = () => {
           </div>
         </section>
 
-        <section className="cta-section">
+        {/* <section className="cta-section">
           <div className="cta-container">
             <div className="cta-content">
               <h3 className="cta-title">¿Listo para tu Primera Historia?</h3>
@@ -78,9 +101,14 @@ const Home = () => {
                   <span className="stat-label">Líneas escritas</span>
                 </div>
               </div>
-              <Link to="/register" className="btn btn-primary btn-large">
+              <Button 
+                to="/register" 
+                variant="primary" 
+                size="large"
+                icon="🚀"
+              >
                 Unirse a la Comunidad
-              </Link>
+              </Button>
             </div>
             <div className="cta-illustration">
               <div className="typewriter">
@@ -94,7 +122,7 @@ const Home = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
       </main>
 
     </div>

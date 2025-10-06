@@ -2,22 +2,27 @@
 
 .home-container {
   min-height: 100vh;
+  width: 100%;
   background: var(--paper-gradient);
   color: var(--ink-black);
   font-family: 'Crimson Text', serif;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 /* Main Content */
 .main-content {
   padding-top: 80px;
   flex: 1;
+  width: 100%;
 }
 
 /* Hero Section */
 .hero {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 4rem 2rem;
   display: grid;
@@ -25,10 +30,119 @@
   gap: 4rem;
   align-items: center;
   min-height: 70vh;
+  width: 100%;
 }
 
 .hero-content {
   animation: fadeInLeft 1s ease-out;
+}
+
+/* Hero Logo - Estilo Exquis grande */
+.hero-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.hero-logo-main-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.hero-logo-main {
+  font-family: 'Dancing Script', cursive;
+  font-size: 6rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.1;
+  background: var(--autumn-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 3px 3px 8px var(--shadow-medium);
+  letter-spacing: 1px;
+  position: relative;
+  padding-bottom: 0.3rem;
+}
+
+/* Añadir sombra real al texto con gradiente */
+.hero-logo-main::before {
+  content: 'Exquis';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: -1;
+  background: none;
+  background-clip: text;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  color: rgba(139, 115, 85, 0.2);
+  filter: blur(3px);
+}
+
+.hero-logo-decoration {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: -1rem;
+  flex-shrink: 0;
+}
+
+.hero-quill {
+  font-size: 2.5rem;
+  transform: rotate(-10deg);
+  animation: heroQuillFloat 3s ease-in-out infinite;
+  filter: drop-shadow(2px 2px 4px var(--shadow-light));
+}
+
+.hero-ink-drop {
+  width: 8px;
+  height: 8px;
+  background: var(--coffee-brown);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  right: -15px;
+  animation: heroInkDrop 4s ease-in-out infinite;
+  box-shadow: 0 2px 4px var(--shadow-light);
+}
+
+@keyframes heroQuillFloat {
+  0%, 100% { transform: rotate(-10deg) translateY(0); }
+  50% { transform: rotate(-8deg) translateY(-5px); }
+}
+
+@keyframes heroInkDrop {
+  0%, 90%, 100% { 
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+  5%, 85% { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(20px) scale(0.7);
+  }
+}
+
+.hero-logo-subtitle {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.3rem;
+  color: var(--sepia-brown);
+  font-style: italic;
+  margin: 0 0 0 0.2rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 0.9;
 }
 
 .hero-title {
@@ -53,49 +167,6 @@
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-}
-
-.btn {
-  display: inline-block;
-  padding: 0.8rem 2rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  font-family: 'Crimson Text', serif;
-}
-
-.btn-primary {
-  background: var(--autumn-gradient);
-  color: var(--paper-white);
-  box-shadow: 0 4px 15px var(--shadow-medium);
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px var(--shadow-heavy);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: var(--coffee-brown);
-  border: 2px solid var(--coffee-brown);
-}
-
-.btn-secondary:hover {
-  background: var(--coffee-brown);
-  color: var(--paper-white);
-  transform: translateY(-2px);
-}
-
-.btn-large {
-  padding: 1rem 2.5rem;
-  font-size: 1.2rem;
 }
 
 /* Hero Illustration */
@@ -159,10 +230,11 @@
 .features {
   background: rgba(255, 255, 255, 0.5);
   padding: 4rem 0;
+  width: 100%;
 }
 
 .features-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
 }
@@ -239,6 +311,7 @@
   background: var(--aged-paper);
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .cta-section::before {
@@ -253,7 +326,7 @@
 }
 
 .cta-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
   display: grid;
@@ -493,6 +566,18 @@
     text-align: center;
   }
   
+  .hero-logo-main-wrapper {
+    justify-content: center;
+  }
+  
+  .hero-logo-main {
+    font-size: 5rem;
+  }
+  
+  .hero-quill {
+    font-size: 2rem;
+  }
+  
   .hero-actions {
     justify-content: center;
   }
@@ -522,8 +607,16 @@
     padding: 2rem 1rem;
   }
   
-  .hero-title {
-    font-size: 2.5rem;
+  .hero-logo-main {
+    font-size: 4rem;
+  }
+  
+  .hero-logo-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .hero-quill {
+    font-size: 1.8rem;
   }
   
   .hero-subtitle {
@@ -593,19 +686,37 @@
     padding: 1.5rem 0.5rem;
   }
   
-  .hero-title {
-    font-size: 2rem;
+  .hero-logo-main {
+    font-size: 3rem;
+  }
+  
+  .hero-logo-subtitle {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+  
+  .hero-quill {
+    font-size: 1.5rem;
+  }
+  
+  .hero-ink-drop {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
   }
   
   .hero-actions {
     flex-direction: column;
     align-items: center;
+    width: 100%;
   }
   
-  .btn {
+  .hero-actions .btn {
     width: 100%;
     max-width: 280px;
-    text-align: center;
   }
   
   .feature-card {
@@ -638,11 +749,6 @@
 }
 
 /* Estados de accesibilidad */
-.btn:focus {
-  outline: 2px solid var(--autumn-gold);
-  outline-offset: 2px;
-}
-
 .feature-card:focus-within {
   transform: translateY(-5px);
   box-shadow: 0 12px 35px var(--shadow-medium);

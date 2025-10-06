@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+/* Estilos base del botón */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-family: 'Crimson Text', serif;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.btn:disabled,
+.btn-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Tamaños */
+.btn-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.btn-medium {
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+}
+
+.btn-large {
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+}
+
+/* Variantes */
+.btn-primary {
+  background: var(--autumn-gradient);
+  color: var(--paper-white);
+  box-shadow: 0 4px 15px var(--shadow-medium);
+}
+
+.btn-primary:hover:not(:disabled):not(.btn-disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px var(--shadow-heavy);
+}
+
+.btn-primary:active:not(:disabled):not(.btn-disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px var(--shadow-medium);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--coffee-brown);
+  border: 2px solid var(--coffee-brown);
+}
+
+.btn-secondary:hover:not(:disabled):not(.btn-disabled) {
+  background: var(--coffee-brown);
+  color: var(--paper-white);
+  transform: translateY(-2px);
+}
+
+.btn-secondary:active:not(:disabled):not(.btn-disabled) {
+  transform: translateY(0);
+}
+
+.btn-tertiary {
+  background: transparent;
+  color: var(--sepia-brown);
+  border: none;
+  box-shadow: none;
+}
+
+.btn-tertiary:hover:not(:disabled):not(.btn-disabled) {
+  color: var(--coffee-brown);
+  background: rgba(139, 115, 85, 0.1);
+}
+
+/* Estado de carga */
+.btn-loading {
+  color: transparent;
+  pointer-events: none;
+}
+
+.btn-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid var(--paper-white);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.btn-secondary .btn-spinner {
+  border: 2px solid rgba(111, 78, 55, 0.3);
+  border-top: 2px solid var(--coffee-brown);
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Iconos */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.1em;
+}
+
+.btn-icon-left {
+  margin-right: 0.2rem;
+}
+
+.btn-icon-right {
+  margin-left: 0.2rem;
+}
+
+/* Ancho completo */
+.btn-full-width {
+  width: 100%;
+}
+
+/* Texto del botón */
+.btn-text {
+  display: inline-block;
+}
+
+.btn-loading .btn-text {
+  opacity: 0;
+}
+
+/* Efecto ripple opcional */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Accesibilidad */
+.btn:focus-visible {
+  outline: 2px solid var(--autumn-gold);
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .btn-medium {
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .btn-large {
+    padding: 0.9rem 2rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .btn-medium {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+  }
+  
+  .btn-large {
+    padding: 0.8rem 1.8rem;
+    font-size: 1rem;
+  }
+}
+
+/* Estados especiales para contextos específicos */
+.btn-success {
+  background: var(--success-green);
+  color: var(--paper-white);
+  box-shadow: 0 4px 15px rgba(124, 152, 133, 0.3);
+}
+
+.btn-success:hover:not(:disabled):not(.btn-disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 152, 133, 0.4);
+}
+
+.btn-danger {
+  background: var(--error-red);
+  color: var(--paper-white);
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+}
+
+.btn-danger:hover:not(:disabled):not(.btn-disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
+}
+
+.btn-warning {
+  background: var(--warning-orange);
+  color: var(--paper-white);
+  box-shadow: 0 4px 15px rgba(205, 133, 63, 0.3);
+}
+
+.btn-warning:hover:not(:disabled):not(.btn-disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(205, 133, 63, 0.4);
+}
