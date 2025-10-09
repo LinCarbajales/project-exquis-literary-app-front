@@ -100,8 +100,8 @@
 /* Secciones */
 .register-section {
   margin-bottom: 2.5rem;
-  padding-left: 1.5rem;
-  border-left: 4px solid var(--autumn-gold);
+  padding-left: 0;
+  border-left: none;
 }
 
 .register-section-title {
@@ -133,6 +133,7 @@
 .register-field {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 /* Labels */
@@ -142,6 +143,10 @@
   margin-bottom: 0.6rem;
   font-size: 1rem;
   display: block;
+  margin-left: 0;
+  padding-left: 0;
+  text-align: left;
+  width: 100%;
 }
 
 .required {
@@ -466,4 +471,16 @@
 .register-field:focus-within .register-label {
   color: var(--autumn-gold);
   transition: color 0.3s ease;
+}
+
+/* Centrar los campos del login */
+.login-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-centered .register-field {
+  width: 80%;
+  max-width: 400px;
 }
