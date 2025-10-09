@@ -31,7 +31,7 @@ const onSubmit = async (data) => {
     const result = await registerService.registerUser(registerData);
     
     if (result.success) {
-      alert('¡Registro exitoso!');
+      alert('Registro completado');
       navigate('/login');
     }
     
