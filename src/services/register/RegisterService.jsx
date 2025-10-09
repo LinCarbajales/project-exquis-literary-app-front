@@ -1,5 +1,5 @@
 // services/RegisterService.js
-import RegisterRepository from '../../repositories/RegisterRepository';
+import RegisterRepository from '../../repositories/register/RegisterRepository';
 
 class RegisterService {
   constructor() {
