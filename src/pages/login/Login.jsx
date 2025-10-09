@@ -22,7 +22,16 @@ const Login = () => {
       }
     } catch (error) {
       console.error('❌ Error en login:', error);
-      setSubmitError(error.message || 'Credenciales incorrectas');
+      // Mensajes de error más específicos
+      if (error.message.includes('401')) {
+        setSubmitError('Credenciales incorrectas');
+      } else if (error.message.includes('403')) {
+        setSubmitError('Acceso denegado');
+      } else if (error.message.includes('500')) {
+        setSubmitError('Error del servidor. Inténtalo más tarde');
+      } else {
+        setSubmitError(error.message || 'Error al iniciar sesión');
+      }
     } finally {
       setIsLoading(false);
     }
