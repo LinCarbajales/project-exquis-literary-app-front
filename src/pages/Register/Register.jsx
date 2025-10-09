@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import './Register.css';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
+import registerService from '../../services/register/RegisterService';
 
 const Register = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -14,32 +13,38 @@ const Register = () => {
   // Para comparar contraseñas
   const watchPassword = watch("password");
 
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    setSubmitError('');
+const onSubmit = async (data) => {
+  setIsLoading(true);
+  setSubmitError('');
 
-    try {
-      // Aquí iría la llamada a tu API de registro
-      console.log('Datos de registro:', data);
-      
-      // Simulación de llamada API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Si el registro es exitoso
-      alert('Registro completado con éxito');
-      navigate('/login'); // Redirigir al login
-      
-    } catch (error) {
-      console.error('Error en el registro:', error);
-      setSubmitError(error.message || 'Error al procesar el registro. Inténtalo de nuevo.');
-    } finally {
-      setIsLoading(false);
+  try {
+    // Preparar datos para enviar
+    const registerData = {
+      username: data.username,
+      name: data.name,
+      surname: data.surname,
+      email: data.email,
+      password: data.password,
+    };
+    
+    // Llamar a tu servicio
+    const result = await registerService.registerUser(registerData);
+    
+    if (result.success) {
+      alert('¡Registro exitoso!');
+      navigate('/login');
     }
-  };
+    
+  } catch (error) {
+    console.error('Error en el registro:', error);
+    setSubmitError(error.message || 'Error al procesar el registro');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <>
-      <Header isAuthenticated={false} />
       
       <div className="register-page">
         <div className="register-container">
@@ -290,8 +295,6 @@ const Register = () => {
           </form>
         </div>
       </div>
-
-      <Footer isAuthenticated={false} />
     </>
   );
 };

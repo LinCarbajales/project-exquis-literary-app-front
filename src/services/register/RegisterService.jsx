@@ -1,5 +1,5 @@
 // services/RegisterService.js
-import RegisterRepository from '../../repositories/register/RegisterRepository';
+import RegisterRepository from '../../repositories/RegisterRepository';
 
 class RegisterService {
   constructor() {
@@ -10,10 +10,12 @@ class RegisterService {
     try {
       // Primero preparamos los datos SIN encriptar para validación
       const userDataForValidation = {
+        username: formData.username,
         name: formData.name,
         surname: formData.surname,
         email: formData.email,
         password: formData.password,
+        roles: ["USER"],
       };
 
       // Validaciones adicionales con datos sin encriptar
@@ -21,10 +23,12 @@ class RegisterService {
 
       // DESPUÉS de validar, preparamos los datos para enviar a la API (con encriptación)
       const userDataForAPI = {
+        username: formData.username,
         name: formData.name,
         surname: formData.surname,
         email: btoa(formData.email),
         password: btoa(formData.password),
+        roles: ["USER"],
       };
 
       // Llama al repository con los datos encriptados
