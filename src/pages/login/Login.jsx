@@ -17,7 +17,6 @@ const Login = () => {
     try {
       const user = await authService.loginUser(data);
       if (user) {
-        alert(`¡Bienvenido, ${user.username || 'usuario'}!`);
         navigate('/'); // redirige al home o al dashboard
       }
     } catch (error) {

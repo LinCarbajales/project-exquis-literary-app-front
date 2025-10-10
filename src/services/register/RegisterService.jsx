@@ -26,8 +26,8 @@ class RegisterService {
         username: formData.username,
         name: formData.name,
         surname: formData.surname,
-        email: btoa(formData.email),
-        password: btoa(formData.password),
+        email: (formData.email),
+        password: (formData.password),
         roles: ["USER"],
       };
 

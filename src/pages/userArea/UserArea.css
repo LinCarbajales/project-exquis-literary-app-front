@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Kalam:wght@400;700&display=swap');
+
+.userarea-page {
+  min-height: 100vh;
+  background: var(--paper-gradient);
+  font-family: 'Crimson Text', serif;
+  color: var(--ink-black);
+  padding: 120px 2rem 4rem;
+}
+
+.userarea-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.userarea-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.userarea-title {
+  font-family: 'Kalam', cursive;
+  font-size: 2.5rem;
+  color: var(--coffee-brown);
+  text-shadow: 2px 2px 4px var(--shadow-light);
+  margin-bottom: 0.5rem;
+}
+
+.userarea-subtitle {
+  font-size: 1.1rem;
+  color: var(--sepia-brown);
+  font-style: italic;
+}
+
+.quill-icon {
+  font-size: 2.5rem;
+  animation: float 3s ease-in-out infinite;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.userarea-form {
+  background: var(--paper-white);
+  border: 2px solid var(--border-light);
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 12px 40px var(--shadow-medium);
+  position: relative;
+}
+
+.userarea-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--autumn-gradient);
+  border-radius: 16px 16px 0 0;
+}
+
+/* Mensajes */
+.userarea-error,
+.userarea-success {
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.userarea-error {
+  background: rgba(139, 69, 19, 0.1);
+  border: 2px solid var(--error-red);
+  color: var(--error-red);
+}
+
+.userarea-success {
+  background: rgba(124, 152, 133, 0.1);
+  border: 2px solid var(--success-green);
+  color: var(--success-green);
+}
+
+/* Secciones */
+.userarea-section {
+  margin-bottom: 2.5rem;
+}
+
+.userarea-section-title {
+  font-family: 'Kalam', cursive;
+  font-size: 1.5rem;
+  color: var(--coffee-brown);
+  margin-bottom: 1.5rem;
+}
+
+/* Filas y campos */
+.userarea-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.userarea-row:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .userarea-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+.userarea-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.userarea-label {
+  font-weight: 600;
+  color: var(--coffee-brown);
+  margin-bottom: 0.5rem;
+}
+
+.userarea-input {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  background: var(--aged-paper);
+  border: 2px solid var(--border-medium);
+  border-radius: 10px;
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  color: var(--ink-black);
+  transition: all 0.3s ease;
+}
+
+.userarea-input:focus {
+  outline: none;
+  border-color: var(--autumn-gold);
+  background: var(--paper-white);
+  box-shadow: 0 0 0 3px rgba(196, 149, 108, 0.1);
+}
+
+.userarea-input-error {
+  border-color: var(--error-red);
+  background: rgba(139, 69, 19, 0.05);
+}
+
+.userarea-error-text {
+  color: var(--error-red);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-top: 0.3rem;
+}
+
+/* Acciones */
+.userarea-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .userarea-actions {
+    flex-direction: column;
+  }
+
+  .userarea-actions .btn {
+    width: 100%;
+  }
+}
