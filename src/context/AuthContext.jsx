@@ -1,4 +1,3 @@
-// AuthContext.jsx
 import React, { useState, useEffect } from 'react';
 import { AuthContext } from './AuthContext'; // Importamos desde el nuevo archivo
 import authService from '../services/auth/AuthService';

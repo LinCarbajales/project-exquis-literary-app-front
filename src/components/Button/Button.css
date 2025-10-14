@@ -45,12 +45,13 @@
 
 /* Variantes */
 .btn-primary {
-  background: var(--autumn-gradient);
+  background: var(--coffee-brown);
   color: var(--paper-white);
   box-shadow: 0 4px 15px var(--shadow-medium);
 }
 
 .btn-primary:hover:not(:disabled):not(.btn-disabled) {
+  background: var(--sepia-brown);
   transform: translateY(-3px);
   box-shadow: 0 8px 25px var(--shadow-heavy);
 }
@@ -209,6 +210,7 @@
 }
 
 .btn-success:hover:not(:disabled):not(.btn-disabled) {
+  background: #6b9675;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(124, 152, 133, 0.4);
 }
@@ -220,6 +222,7 @@
 }
 
 .btn-danger:hover:not(:disabled):not(.btn-disabled) {
+  background: #a84415;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
 }
@@ -231,6 +234,7 @@
 }
 
 .btn-warning:hover:not(:disabled):not(.btn-disabled) {
+  background: #c17a42;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(205, 133, 63, 0.4);
 }
