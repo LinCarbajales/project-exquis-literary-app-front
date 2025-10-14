@@ -75,7 +75,9 @@ class AuthRepository {
       // Limpiar localStorage
       localStorage.removeItem('authToken');
       localStorage.removeItem('userId');
-      console.log('🧹 Token eliminado de localStorage');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('username');
+      console.log('🧹 Token y datos de usuario eliminados de localStorage');
 
       return true;
     } catch (error) {
@@ -83,6 +85,8 @@ class AuthRepository {
       // Aunque falle, limpiamos el localStorage
       localStorage.removeItem('authToken');
       localStorage.removeItem('userId');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('username');
       throw error;
     }
   }
@@ -108,6 +112,37 @@ class AuthRepository {
   getUserId() {
     const userId = localStorage.getItem('userId');
     return userId ? parseInt(userId, 10) : null;
+  }
+
+  /**
+   * 📧 Obtiene el email del usuario del localStorage
+   */
+  getUserEmail() {
+    return localStorage.getItem('userEmail');
+  }
+
+  /**
+   * 👤 Obtiene el username del localStorage
+   */
+  getUsername() {
+    return localStorage.getItem('username');
+  }
+
+  /**
+   * 👥 Obtiene toda la información del usuario del localStorage
+   */
+  getUserInfo() {
+    const userId = this.getUserId();
+    const userEmail = this.getUserEmail();
+    const username = this.getUsername();
+    
+    if (!userId) return null;
+    
+    return {
+      id_user: userId,
+      email: userEmail,
+      username: username,
+    };
   }
 }
 

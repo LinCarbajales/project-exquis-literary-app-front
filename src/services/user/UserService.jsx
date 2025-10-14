@@ -15,6 +15,12 @@ class UserService {
    */
   getAuthHeaders() {
     const token = this.getToken();
+    
+    console.log('🔑 Token disponible:', token ? 'SÍ' : 'NO');
+    if (token) {
+      console.log('🔑 Token (primeros 20 chars):', token.substring(0, 20) + '...');
+    }
+    
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
