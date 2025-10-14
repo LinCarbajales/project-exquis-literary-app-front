@@ -3,7 +3,7 @@ import AuthRepository from '../../repositories/auth/AuthRepository';
 class AuthService {
   constructor() {
     this.authRepository = new AuthRepository();
-    this.baseUrl = import.meta.env.VITE_API_BASE_URL;
+    this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
   }
 
   // 🔹 Iniciar sesión con JWT
@@ -13,15 +13,16 @@ class AuthService {
       if (!formData.email?.trim()) throw new Error('El email es obligatorio');
       if (!formData.password?.trim()) throw new Error('La contraseña es obligatoria');
 
+      console.log('🔐 Intentando login para:', formData.email);
+
       // Llamamos al repository con las credenciales
-      // Ya no creamos el Basic Auth, enviamos directamente email y password
-      const user = await this.authRepository.login({
+      const data = await this.authRepository.login({
         email: formData.email,
         password: formData.password
       });
 
-      console.log('✅ Login con éxito:', user);
-      return user;
+      console.log('✅ Login con éxito:', data);
+      return data;
     } catch (error) {
       console.error('❌ Error en AuthService.loginUser:', error);
       throw error;
@@ -51,9 +52,10 @@ class AuthService {
         return null;
       }
 
+      console.log('📡 Obteniendo usuario actual...');
+
       const response = await fetch(`${this.baseUrl}/users/me`, {
         method: 'GET',
-        credentials: 'include',
         headers: {
           'Accept': 'application/json',
           'Authorization': `Bearer ${token}`, // Enviamos el token JWT
@@ -62,13 +64,18 @@ class AuthService {
 
       if (!response.ok) {
         console.warn('⚠️ No se pudo obtener el usuario actual (sesión expirada o token inválido)');
-        // Si el token es inválido, lo eliminamos
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userId');
-        return null;
+        
+        // Si el token es inválido (401 o 403), lo eliminamos
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userId');
+        }
+        
+        throw new Error(`Error ${response.status}: No se pudo obtener el usuario`);
       }
 
       const user = await response.json();
+      console.log('✅ Usuario obtenido:', user);
       return user;
     } catch (error) {
       console.error('❌ Error en AuthService.getCurrentUser:', error);
@@ -84,6 +91,26 @@ class AuthService {
   // 🔹 Obtener el token (por si lo necesitas en otros servicios)
   getToken() {
     return this.authRepository.getToken();
+  }
+
+  // 🔹 Obtener el userId
+  getUserId() {
+    return this.authRepository.getUserId();
+  }
+
+  // 🔹 Obtener el email del usuario
+  getUserEmail() {
+    return this.authRepository.getUserEmail();
+  }
+
+  // 🔹 Obtener el username
+  getUsername() {
+    return this.authRepository.getUsername();
+  }
+
+  // 🔹 Obtener toda la información del usuario guardada
+  getUserInfo() {
+    return this.authRepository.getUserInfo();
   }
 }
 

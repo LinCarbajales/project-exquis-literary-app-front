@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
-import '../register/Register'; // Reutiliza los estilos del registro
+import '../register/Register.css'; // Reutiliza los estilos del registro
 import authService from '../../services/auth/AuthService';
 
 const Login = () => {
@@ -15,21 +15,31 @@ const Login = () => {
     setSubmitError('');
 
     try {
-      const user = await authService.loginUser(data);
-      if (user) {
+      console.log('🔐 Intentando login...');
+      
+      // Llamar al servicio de autenticación
+      const result = await authService.loginUser(data);
+      
+      if (result && result.token) {
+        console.log('✅ Login exitoso, redirigiendo...');
         navigate('/'); // redirige al home o al dashboard
       }
     } catch (error) {
       console.error('❌ Error en login:', error);
+      
       // Mensajes de error más específicos
-      if (error.message.includes('401')) {
-        setSubmitError('Credenciales incorrectas');
-      } else if (error.message.includes('403')) {
-        setSubmitError('Acceso denegado');
-      } else if (error.message.includes('500')) {
-        setSubmitError('Error del servidor. Inténtalo más tarde');
+      const errorMessage = error.message || '';
+      
+      if (errorMessage.includes('401') || errorMessage.includes('Credenciales')) {
+        setSubmitError('Credenciales incorrectas. Verifica tu email y contraseña.');
+      } else if (errorMessage.includes('403')) {
+        setSubmitError('Acceso denegado. Contacta con el administrador.');
+      } else if (errorMessage.includes('500')) {
+        setSubmitError('Error del servidor. Inténtalo más tarde.');
+      } else if (errorMessage.includes('Network') || errorMessage.includes('Failed to fetch')) {
+        setSubmitError('No se pudo conectar con el servidor. Verifica tu conexión.');
       } else {
-        setSubmitError(error.message || 'Error al iniciar sesión');
+        setSubmitError(errorMessage || 'Error al iniciar sesión. Inténtalo de nuevo.');
       }
     } finally {
       setIsLoading(false);

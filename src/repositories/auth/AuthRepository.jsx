@@ -1,83 +1,113 @@
 class AuthRepository {
   constructor() {
-    this.baseUrl = import.meta.env.VITE_API_BASE_URL;
+    this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
   }
-  
-  // 🔹 Iniciar sesión con JWT
+
+  /**
+   * 🔑 Login - Obtiene el token JWT
+   */
   async login(credentials) {
-    // Enviamos las credenciales como JSON en el body
-    const response = await fetch(`${this.baseUrl}/login`, {
-      method: 'POST', // Cambiado de GET a POST
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password
-      })
-    });
+    try {
+      console.log('📡 Enviando petición de login a:', `${this.baseUrl}/login`);
+      
+      const response = await fetch(`${this.baseUrl}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: credentials.email,
+          password: credentials.password,
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`Error al iniciar sesión (${response.status})`);
-    }
+      console.log('📨 Respuesta del servidor:', response.status);
 
-    // El backend debe devolver { token: "...", user: {...} }
-    const data = await response.json();
-    
-    // Guardamos el token JWT en localStorage
-    if (data.token) {
-      localStorage.setItem('authToken', data.token);
-    }
-    
-    // Guardamos también el ID del usuario
-    if (data.user && data.user.id_user) {
-      localStorage.setItem('userId', data.user.id_user);
-    }
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('❌ Error en login:', errorData);
+        throw new Error(`Error ${response.status}: ${errorData || 'Credenciales incorrectas'}`);
+      }
 
-    return data.user;
+      const data = await response.json();
+      console.log('✅ Datos recibidos:', data);
+
+      // Guardar el token en localStorage
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+        console.log('💾 Token guardado en localStorage');
+      } else {
+        throw new Error('No se recibió token del servidor');
+      }
+
+      // Guardar información del usuario
+      if (data.user) {
+        localStorage.setItem('userId', data.user.id_user.toString());
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('username', data.user.username);
+        console.log('💾 Datos de usuario guardados:', data.user);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('❌ Error en AuthRepository.login:', error);
+      throw error;
+    }
   }
 
-  // 🔹 Cerrar sesión
+  /**
+   * 🚪 Logout - Elimina el token
+   */
   async logout() {
-    // Obtenemos el token para enviarlo en el header
-    const token = localStorage.getItem('authToken');
-    
-    const response = await fetch(`${this.baseUrl}/logout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // Enviamos el token
-      },
-      credentials: 'include',
-    });
+    try {
+      const token = this.getToken();
 
-    if (!response.ok) {
-      throw new Error('Error al cerrar sesión');
-    }
+      // Si tienes un endpoint de logout en el backend, llámalo aquí
+      if (token) {
+        await fetch(`${this.baseUrl}/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }).catch(err => console.warn('Error al llamar al logout del backend:', err));
+      }
 
-    // Eliminamos el token y userId del localStorage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userId');
+      // Limpiar localStorage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userId');
+      console.log('🧹 Token eliminado de localStorage');
 
-    // Verificamos si la respuesta tiene JSON
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-      return await response.json();
-    } else {
-      return;
+      return true;
+    } catch (error) {
+      console.error('❌ Error en AuthRepository.logout:', error);
+      // Aunque falle, limpiamos el localStorage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userId');
+      throw error;
     }
   }
 
-  // 🔹 Método auxiliar: obtener el token actual
+  /**
+   * 🔍 Verifica si hay un token guardado
+   */
+  isAuthenticated() {
+    const token = this.getToken();
+    return !!token;
+  }
+
+  /**
+   * 🎫 Obtiene el token del localStorage
+   */
   getToken() {
     return localStorage.getItem('authToken');
   }
 
-  // 🔹 Método auxiliar: verificar si hay sesión activa
-  isAuthenticated() {
-    return !!this.getToken();
+  /**
+   * 👤 Obtiene el userId del localStorage
+   */
+  getUserId() {
+    const userId = localStorage.getItem('userId');
+    return userId ? parseInt(userId, 10) : null;
   }
 }
 

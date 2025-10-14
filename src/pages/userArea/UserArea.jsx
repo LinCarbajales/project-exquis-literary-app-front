@@ -25,6 +25,8 @@ const UserArea = () => {
       }
 
       setIsLoading(true);
+      setSubmitError('');
+
       try {
         console.log('📡 Cargando datos del usuario...');
         const currentUser = await userService.getCurrentUser();
@@ -32,19 +34,20 @@ const UserArea = () => {
         
         // Rellenar el formulario con los datos del usuario
         reset({
-          username: currentUser.username,
-          name: currentUser.name,
-          surname: currentUser.surname,
-          email: currentUser.email,
+          username: currentUser.username || '',
+          name: currentUser.name || '',
+          surname: currentUser.surname || '',
+          email: currentUser.email || '',
           password: '', // Siempre vacío por seguridad
         });
       } catch (error) {
         console.error('❌ Error al cargar datos:', error);
         
-        if (error.response?.status === 401 || error.response?.status === 403) {
+        if (error.message?.includes('401') || error.message?.includes('403')) {
           setSubmitError('Sesión expirada. Por favor, inicia sesión de nuevo.');
           setTimeout(() => {
-            authService.logout();
+            authService.logoutUser();
+            navigate('/login');
           }, 2000);
         } else {
           setSubmitError('No se pudieron cargar tus datos. Inténtalo de nuevo.');
@@ -77,19 +80,26 @@ const UserArea = () => {
       
       setSuccessMessage('Datos actualizados correctamente ✨');
       
-      // Si actualizó el email, podría necesitar nuevo login
-      // En ese caso, podrías cerrar sesión automáticamente
+      // Limpiar el mensaje después de 5 segundos
+      setTimeout(() => setSuccessMessage(''), 5000);
       
     } catch (error) {
       console.error('❌ Error al actualizar:', error);
       
-      if (error.response?.data?.message) {
-        setSubmitError(error.response.data.message);
-      } else if (error.response?.status === 401) {
+      const errorMessage = error.message || '';
+      
+      if (errorMessage.includes('401') || errorMessage.includes('403')) {
         setSubmitError('Sesión expirada. Redirigiendo al login...');
-        setTimeout(() => authService.logout(), 2000);
+        setTimeout(() => {
+          authService.logoutUser();
+          navigate('/login');
+        }, 2000);
+      } else if (errorMessage.includes('seudónimo') || errorMessage.includes('username')) {
+        setSubmitError('El seudónimo ya está en uso por otro usuario.');
+      } else if (errorMessage.includes('email')) {
+        setSubmitError('El email ya está en uso por otro usuario.');
       } else {
-        setSubmitError('Error al actualizar los datos. Inténtalo de nuevo.');
+        setSubmitError(errorMessage || 'Error al actualizar los datos. Inténtalo de nuevo.');
       }
     } finally {
       setIsLoading(false);
@@ -110,7 +120,9 @@ const UserArea = () => {
       console.log('✅ Cuenta eliminada');
       
       alert('Tu cuenta ha sido eliminada.');
-      authService.logout();
+      
+      // El userService ya limpia el localStorage
+      navigate('/login');
       
     } catch (error) {
       console.error('❌ Error al eliminar cuenta:', error);
@@ -216,7 +228,7 @@ const UserArea = () => {
                   {...register('password')}
                   className="userarea-input"
                 />
-                <small style={{ color: '#666', fontSize: '0.85rem' }}>
+                <small style={{ color: '#666', fontSize: '0.85rem', marginTop: '4px', display: 'block' }}>
                   Solo completa este campo si quieres cambiar tu contraseña
                 </small>
               </div>
