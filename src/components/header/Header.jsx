@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Header.css';
 
-const Header = ({ user = null, isAuthenticated = false }) => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
+  
+  // Referencias para detectar clics fuera
+  const dropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   // Detectar scroll para cambiar apariencia del header
   useEffect(() => {
@@ -18,20 +25,60 @@ const Header = ({ user = null, isAuthenticated = false }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Cerrar menú al cambiar de ruta
+  // Cerrar menús al cambiar de ruta
   useEffect(() => {
     setIsMenuOpen(false);
+    setIsUserDropdownOpen(false);
   }, [location.pathname]);
 
-  const handleLogout = () => {
-    // Aquí iría la lógica de logout
-    console.log('Cerrando sesión...');
-    // logout();
+  // Cerrar dropdowns al hacer clic fuera de ellos
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Cerrar dropdown de usuario si se hace clic fuera
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsUserDropdownOpen(false);
+      }
+      
+      // Cerrar menú móvil si se hace clic fuera (solo en el overlay)
+      if (isMenuOpen && !mobileMenuRef.current?.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  const handleLogout = async () => {
+    console.log('🚪 Cerrando sesión...');
+    await logout();
     navigate('/');
+    setIsUserDropdownOpen(false);
+    setIsMenuOpen(false);
+  };
+
+  // Función combinada para logout en móvil
+  const handleMobileLogout = () => {
+    handleLogout();
+    closeMobileMenu();
   };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleUserDropdown = () => {
+    setIsUserDropdownOpen(!isUserDropdownOpen);
+  };
+
+  const closeUserDropdown = () => {
+    setIsUserDropdownOpen(false);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMenuOpen(false);
   };
 
   return (
@@ -73,8 +120,13 @@ const Header = ({ user = null, isAuthenticated = false }) => {
               </Link>
               
               {/* Menú de usuario */}
-              <div className="user-menu">
-                <Link to={`/profile/${user?.id || 'me'}`} className="user-profile">
+              <div className="user-menu" ref={dropdownRef}>
+                <button 
+                  className={`user-profile ${isUserDropdownOpen ? 'active' : ''}`}
+                  onClick={toggleUserDropdown}
+                  aria-haspopup="true"
+                  aria-expanded={isUserDropdownOpen}
+                >
                   <div className="user-avatar">
                     {user?.avatar ? (
                       <img src={user.avatar} alt={user.username} />
@@ -85,13 +137,21 @@ const Header = ({ user = null, isAuthenticated = false }) => {
                     )}
                   </div>
                   <span className="username">{user?.username || 'Usuario'}</span>
-                </Link>
-                <div className="dropdown">
+                </button>
+                <div className={`dropdown ${isUserDropdownOpen ? 'open' : ''}`}>
                   <div className="dropdown-content">
-                    <Link to={`/profile/${user?.id || 'me'}`} className="dropdown-item">
+                    <Link 
+                      to="/userarea" 
+                      className="dropdown-item"
+                      onClick={closeUserDropdown}
+                    >
                       <span>👤</span> Mi Perfil
                     </Link>
-                    <Link to="/settings" className="dropdown-item">
+                    <Link 
+                      to="/settings" 
+                      className="dropdown-item"
+                      onClick={closeUserDropdown}
+                    >
                       <span>⚙️</span> Configuración
                     </Link>
                     <hr className="dropdown-divider" />
@@ -132,8 +192,8 @@ const Header = ({ user = null, isAuthenticated = false }) => {
         </button>
       </div>
 
-      {/* Menú móvil */}
-      <nav className={`nav-mobile ${isMenuOpen ? 'open' : ''}`}>
+      {/* Menú móvil - CORREGIDO: sin doble onClick */}
+      <nav className={`nav-mobile ${isMenuOpen ? 'open' : ''}`} ref={mobileMenuRef}>
         <div className="nav-mobile-content">
           {isAuthenticated ? (
             <>
@@ -154,45 +214,46 @@ const Header = ({ user = null, isAuthenticated = false }) => {
               </div>
               
               <div className="nav-mobile-links">
-                <Link to="/dashboard" className="mobile-nav-link">
+                <Link to="/dashboard" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>🏠</span> Escritorio
                 </Link>
-                <Link to="/stories" className="mobile-nav-link">
+                <Link to="/stories" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>📚</span> Historias
                 </Link>
-                <Link to="/explore" className="mobile-nav-link">
+                <Link to="/explore" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>🔍</span> Explorar
                 </Link>
-                <Link to={`/profile/${user?.id || 'me'}`} className="mobile-nav-link">
+                <Link to="/userarea" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>👤</span> Mi Perfil
                 </Link>
-                <Link to="/settings" className="mobile-nav-link">
+                <Link to="/settings" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>⚙️</span> Configuración
                 </Link>
               </div>
               
-              <button onClick={handleLogout} className="mobile-logout-btn">
+              {/* BOTÓN CORREGIDO: solo un onClick */}
+              <button onClick={handleMobileLogout} className="mobile-logout-btn">
                 <span>🚪</span> Cerrar Sesión
               </button>
             </>
           ) : (
             <>
               <div className="nav-mobile-links">
-                <Link to="/" className="mobile-nav-link">
+                <Link to="/" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>🏠</span> Inicio
                 </Link>
-                <Link to="/about" className="mobile-nav-link">
+                <Link to="/about" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>❓</span> ¿Cómo funciona?
                 </Link>
-                <Link to="/examples" className="mobile-nav-link">
+                <Link to="/examples" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>📖</span> Ejemplos
                 </Link>
-                <Link to="/login" className="mobile-nav-link">
+                <Link to="/login" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>🔑</span> Iniciar Sesión
                 </Link>
               </div>
               
-              <Link to="/register" className="mobile-register-btn">
+              <Link to="/register" className="mobile-register-btn" onClick={closeMobileMenu}>
                 Crear Cuenta
               </Link>
             </>
@@ -201,7 +262,12 @@ const Header = ({ user = null, isAuthenticated = false }) => {
       </nav>
 
       {/* Overlay para cerrar menú móvil */}
-      {isMenuOpen && <div className="mobile-menu-overlay" onClick={toggleMenu}></div>}
+      {isMenuOpen && (
+        <div 
+          className="mobile-menu-overlay" 
+          onClick={closeMobileMenu}
+        ></div>
+      )}
     </header>
   );
 };

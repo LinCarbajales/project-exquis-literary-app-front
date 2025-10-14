@@ -210,6 +210,11 @@
   transform: translateY(-1px);
 }
 
+.user-profile.active {
+  background: rgba(196, 149, 108, 0.15) !important;
+  border-color: var(--autumn-gold) !important;
+}
+
 .user-avatar {
   width: 32px;
   height: 32px;
@@ -323,6 +328,13 @@
 .dropdown-item.logout:hover {
   background: rgba(139, 69, 19, 0.1);
   color: var(--error-red);
+}
+
+.dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: all;
 }
 
 /* Botón menú móvil */
