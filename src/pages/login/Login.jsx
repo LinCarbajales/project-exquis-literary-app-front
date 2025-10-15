@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
-import '../register/Register.css'; // Reutiliza los estilos del registro
-import authService from '../../services/auth/AuthService';
+import '../register/Register.css';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth(); // ← Usar el contexto
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -17,17 +18,16 @@ const Login = () => {
     try {
       console.log('🔐 Intentando login...');
       
-      // Llamar al servicio de autenticación
-      const result = await authService.loginUser(data);
+      // Usar el login del contexto en lugar de authService directamente
+      const result = await login(data);
       
       if (result && result.token) {
         console.log('✅ Login exitoso, redirigiendo...');
-        navigate('/'); // redirige al home o al dashboard
+        navigate('/'); // redirige al home
       }
     } catch (error) {
       console.error('❌ Error en login:', error);
       
-      // Mensajes de error más específicos
       const errorMessage = error.message || '';
       
       if (errorMessage.includes('401') || errorMessage.includes('Credenciales')) {
@@ -49,7 +49,6 @@ const Login = () => {
   return (
     <div className="register-page">
       <div className="register-container">
-        {/* Cabecera decorativa */}
         <div className="register-header">
           <div className="register-decoration">
             <span className="quill-icon">🖋️</span>
@@ -60,9 +59,7 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Formulario */}
         <form className="register-form" onSubmit={handleSubmit(onSubmit)}>
-          {/* Error general */}
           {submitError && (
             <div className="register-error-general">
               <span className="error-icon">⚠️</span>
@@ -70,7 +67,6 @@ const Login = () => {
             </div>
           )}
 
-          {/* Datos de inicio de sesión */}
           <section className="register-section">
             <h2 className="register-section-title">Datos de acceso</h2>
 
@@ -116,7 +112,6 @@ const Login = () => {
             </div>
           </section>
 
-          {/* Botón de envío */}
           <div className="register-actions">
             <button
               type="submit"
@@ -137,7 +132,6 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Link a registro */}
           <div className="register-footer">
             <p>
               ¿Aún no tienes cuenta?{' '}

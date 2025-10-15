@@ -5,10 +5,13 @@ import './UserArea.css';
 import Button from '../../components/Button/Button';
 import userService from '../../services/user/UserService';
 import authService from '../../services/auth/AuthService';
+import { useAuth } from '../../context/AuthContext';
+
 
 const UserArea = () => {
   const navigate = useNavigate();
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { updateUser } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -77,6 +80,9 @@ const UserArea = () => {
       
       const updatedUser = await userService.updateUser(dataToSend);
       console.log('✅ Usuario actualizado:', updatedUser);
+
+      // 🔸 ACTUALIZAR EL CONTEXTO GLOBAL DE AUTENTICACIÓN
+      updateUser(updatedUser);
       
       setSuccessMessage('Datos actualizados correctamente ✨');
       
