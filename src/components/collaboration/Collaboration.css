@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+.collaboration {
+  display: flex;
+  gap: 1rem;
+  padding: 1.2rem 0;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.collaboration-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.collaboration-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--autumn-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.avatar-icon {
+  font-size: 1.5rem;
+  filter: brightness(0) invert(1);
+}
+
+.collaboration-username {
+  font-family: 'Crimson Text', serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--coffee-brown);
+  text-align: center;
+  word-break: break-word;
+  max-width: 80px;
+  line-height: 1.2;
+}
+
+.collaboration-content {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0.3rem;
+}
+
+.collaboration-text {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--ink-black);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.collaboration-previous .collaboration-text {
+  color: var(--sepia-brown);
+  font-style: italic;
+}
+
+.collaboration-separator {
+  height: 1px;
+  background: var(--border-light);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .collaboration {
+    gap: 0.8rem;
+    padding: 1rem 0;
+  }
+
+  .collaboration-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .avatar-icon {
+    font-size: 1.3rem;
+  }
+
+  .collaboration-username {
+    font-size: 0.8rem;
+    max-width: 70px;
+  }
+
+  .collaboration-text {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .collaboration {
+    gap: 0.7rem;
+    padding: 0.9rem 0;
+  }
+
+  .collaboration-left {
+    gap: 0.4rem;
+  }
+
+  .collaboration-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .avatar-icon {
+    font-size: 1.2rem;
+  }
+
+  .collaboration-username {
+    font-size: 0.75rem;
+    max-width: 60px;
+  }
+
+  .collaboration-text {
+    font-size: 1rem;
+  }
+}
