@@ -38,7 +38,7 @@ const Footer = ({ isAuthenticated = false }) => {
             <ul className="footer-links">
               {isAuthenticated ? (
                 <>
-                  <li><Link to="/dashboard">Escritorio</Link></li>
+                  <li><Link to="/">Escritorio</Link></li>
                   <li><Link to="/stories">Mis Historias</Link></li>
                   <li><Link to="/explore">Explorar</Link></li>
                   <li><Link to="/create">Nueva Historia</Link></li>

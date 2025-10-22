@@ -85,7 +85,7 @@ const Header = () => {
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="header-content">
         {/* Logo */}
-        <Link to={isAuthenticated ? "/dashboard" : "/"} className="logo-container">
+        <Link to={isAuthenticated ? "/" : "/"} className="logo-container">
           <div className="logo">
             <span className="logo-main">Exquis</span>
             <div className="logo-decoration">
@@ -101,8 +101,8 @@ const Header = () => {
           {isAuthenticated ? (
             <>
               <Link 
-                to="/dashboard" 
-                className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
+                to="/" 
+                className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
               >
                 Escritorio
               </Link>
@@ -214,7 +214,7 @@ const Header = () => {
               </div>
               
               <div className="nav-mobile-links">
-                <Link to="/dashboard" className="mobile-nav-link" onClick={closeMobileMenu}>
+                <Link to="/" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>🏠</span> Escritorio
                 </Link>
                 <Link to="/stories" className="mobile-nav-link" onClick={closeMobileMenu}>

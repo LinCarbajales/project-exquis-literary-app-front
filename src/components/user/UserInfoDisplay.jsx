@@ -19,7 +19,7 @@ const UserInfoDisplay = () => {
   const handleLogout = async () => {
     try {
       await authService.logoutUser();
-      navigate('/login');
+      //navigate('/login');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }

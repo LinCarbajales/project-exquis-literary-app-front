@@ -24,7 +24,7 @@ const Home = () => {
             </p>
             <div className="hero-actions">
               <Button 
-                to="/participate" 
+                to="/collaborate" 
                 variant="primary" 
                 size="medium"
                 icon="✍️"
