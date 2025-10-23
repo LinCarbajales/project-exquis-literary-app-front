@@ -7,7 +7,7 @@ import Button from '../../components/Button/Button';
 
 const CollaboratePage = () => {
   const navigate = useNavigate();
-  const hasRequestedStory = useRef(false); // ✅ Prevenir múltiples llamadas
+  const hasRequestedStory = useRef(false);
 
   const [story, setStory] = useState(null);
   const [previousCollaboration, setPreviousCollaboration] = useState(null);
@@ -18,7 +18,6 @@ const CollaboratePage = () => {
 
   // 🔹 1. Al cargar la página, pedir una historia libre (solo UNA vez)
   useEffect(() => {
-    // ✅ Prevenir múltiples llamadas (React 18 StrictMode)
     if (hasRequestedStory.current) return;
     hasRequestedStory.current = true;
 
@@ -67,14 +66,14 @@ const CollaboratePage = () => {
 
   // 🔹 3. Temporizador (30 min)
   useEffect(() => {
-    if (!story) return; // ✅ Solo iniciar cuando tengamos una historia
+    if (!story) return;
 
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
           clearInterval(timer);
           alert("⏰ Tiempo agotado. La historia se desbloqueará.");
-          handleAbandon(false); // Sin confirmación
+          handleAbandon(false);
           return 0;
         }
         return prev - 1;
@@ -103,11 +102,9 @@ const CollaboratePage = () => {
     try {
       console.log('📤 Enviando colaboración para historia:', story.storyId);
       
-      // Enviar colaboración
       await createCollaboration(story.storyId, collaborationText);
       console.log('✅ Colaboración enviada');
       
-      // Desbloquear historia
       console.log('🔓 Desbloqueando historia:', story.storyId);
       await unlockStory(story.storyId);
       console.log('✅ Historia desbloqueada');
@@ -179,6 +176,11 @@ const CollaboratePage = () => {
             />
           </div>
         )}
+
+        {/* Número de colaboración */}
+        <div className="collaboration-number-banner">
+          Colaboración {story.currentCollaborationNumber} de {story.extension}
+        </div>
 
         {/* Formulario */}
         <form className="collaborate-form" onSubmit={handleSubmit}>
