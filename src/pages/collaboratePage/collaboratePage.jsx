@@ -169,7 +169,7 @@ const CollaboratePage = () => {
         {previousCollaboration && (
           <div className="previous-collaboration-wrapper">
             <Collaboration
-              username={previousCollaboration.username}
+              username={previousCollaboration.user?.username || 'Anónimo'}
               text={previousCollaboration.text}
               isPrevious={true}
               showSeparator={true}
