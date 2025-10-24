@@ -51,7 +51,7 @@ const UserInfoDisplay = () => {
 export default UserInfoDisplay;
 
 /* 
-EJEMPLO DE USO EN TU NAVBAR:
+EJEMPLO DE USO EN NAVBAR:
 
 import UserInfoDisplay from './components/UserInfoDisplay';
 
