@@ -1,0 +1,243 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Kalam:wght@400;700&display=swap');
+
+.stories-page {
+  min-height: 100vh;
+  background: var(--paper-gradient);
+  font-family: 'Crimson Text', serif;
+  color: var(--ink-black);
+  padding: 120px 2rem 4rem;
+}
+
+.stories-container {
+  max-width: 800px;
+  margin: 0 auto;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Header */
+.stories-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.stories-title {
+  font-family: 'Kalam', cursive;
+  font-size: 2.5rem;
+  color: var(--coffee-brown);
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+}
+
+.stories-subtitle {
+  font-size: 1.2rem;
+  color: var(--sepia-brown);
+  margin: 0;
+  font-style: italic;
+}
+
+/* Stories Feed */
+.stories-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.story-card {
+  background: var(--paper-white);
+  border: 2px solid var(--border-light);
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px var(--shadow-light);
+  position: relative;
+}
+
+.story-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow-medium);
+  border-color: rgba(196, 149, 108, 0.4);
+}
+
+.story-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--autumn-gradient);
+  border-radius: 16px 0 0 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.story-card:hover::before {
+  opacity: 1;
+}
+
+/* Story Header */
+.story-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.username {
+  font-weight: 600;
+  color: var(--coffee-brown);
+}
+
+.dot {
+  color: var(--sepia-brown);
+}
+
+.date {
+  color: var(--sepia-brown);
+}
+
+.collaborations-badge {
+  background: var(--autumn-gradient);
+  color: var(--paper-white);
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+/* Collaboration Text */
+.collaboration-text {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--ink-black);
+  margin: 0 0 1rem 0;
+}
+
+/* Story Footer */
+.story-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.read-more {
+  color: var(--coffee-brown);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+.story-card:hover .read-more {
+  color: var(--autumn-gold);
+}
+
+/* Empty State */
+.empty-state,
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--paper-white);
+  border: 2px solid var(--border-light);
+  border-radius: 16px;
+  margin-top: 2rem;
+  box-shadow: 0 4px 12px var(--shadow-light);
+}
+
+.empty-text,
+.loading-state p,
+.error-state p {
+  font-size: 1.2rem;
+  color: var(--sepia-brown);
+  font-style: italic;
+  margin: 0;
+}
+
+.error-state p {
+  color: var(--error-red);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stories-page {
+    padding: 100px 1rem 2rem;
+  }
+
+  .stories-container {
+    max-width: 100%;
+  }
+
+  .stories-title {
+    font-size: 2rem;
+  }
+
+  .stories-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .story-card {
+    padding: 1.2rem;
+  }
+
+  .collaboration-text {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stories-page {
+    padding: 90px 0.5rem 1.5rem;
+  }
+
+  .stories-title {
+    font-size: 1.75rem;
+  }
+
+  .stories-subtitle {
+    font-size: 1rem;
+  }
+
+  .story-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .story-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .collaboration-text {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .collaborations-badge {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.7rem;
+  }
+}

@@ -129,4 +129,15 @@ export const getBlockedStories = async () => {
   }
 };
 
+// Obtener historias completadas
+export const getCompletedStories = async () => {
+  try {
+    const response = await api.get('/stories/completed');
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener historias completadas:', error);
+    throw error;
+  }
+};
+
 export default api;

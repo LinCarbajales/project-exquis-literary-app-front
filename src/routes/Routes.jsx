@@ -5,6 +5,8 @@ import CollaboratePage from "../pages/collaboratePage/collaboratePage";
 import Register from "../pages/register/Register";
 import Login from "../pages/login/Login";
 import UserArea from "../pages/userArea/UserArea";
+import StoriesPage from "../pages/storiesPage/StoriesPage";
+import StoryDetailPage from '../pages/storyDetailPage/StoryDetailPage';
 
 export default function AppRoutes () {
     return (
@@ -14,7 +16,9 @@ export default function AppRoutes () {
           <Route path="/login" element={<Login />} />
           <Route path="/userarea" element={<UserArea />} />
           <Route path="/collaborate" element={<CollaboratePage />} />
-          </Routes>  
+          <Route path="/stories" element={<StoriesPage />} />
+          <Route path="/stories/:id" element={<StoryDetailPage />} />
+        </Routes>  
     )
   
 }
