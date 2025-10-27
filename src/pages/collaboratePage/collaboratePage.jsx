@@ -4,10 +4,12 @@ import { assignStory, createCollaboration, unlockStory } from '../../services/ap
 import './CollaboratePage.css';
 import Collaboration from '../../components/collaboration/Collaboration';
 import Button from '../../components/Button/Button';
+import { useToast } from '../../context/useToast';
 
 const CollaboratePage = () => {
   const navigate = useNavigate();
   const hasRequestedStory = useRef(false);
+  const { showToast, showConfirm } = useToast();
 
   const [story, setStory] = useState(null);
   const [previousCollaboration, setPreviousCollaboration] = useState(null);
@@ -16,7 +18,6 @@ const CollaboratePage = () => {
   const [timeRemaining, setTimeRemaining] = useState(30 * 60);
   const [error, setError] = useState(null);
 
-  // 🔹 1. Al cargar la página, pedir una historia libre (solo UNA vez)
   useEffect(() => {
     if (hasRequestedStory.current) return;
     hasRequestedStory.current = true;
@@ -35,21 +36,20 @@ const CollaboratePage = () => {
         console.error("❌ Error al asignar historia:", error);
         const errorMsg = error.response?.data?.message || error.message;
         setError(errorMsg);
-        alert(`Error: ${errorMsg}`);
+        showToast(`Error: ${errorMsg}`, 'error', 4000);
         navigate("/");
       }
     };
 
     fetchStory();
-  }, [navigate]);
+  }, [navigate, showToast]);
 
-  // 🔹 2. Función estable para abandonar (con useCallback)
-  const handleAbandon = useCallback(async (showConfirm = true) => {
-    if (showConfirm) {
-      const confirmAbandon = window.confirm(
+  const handleAbandon = useCallback(async (showConfirmDialog = true) => {
+    if (showConfirmDialog) {
+      const confirmed = await showConfirm(
         "¿Seguro que deseas abandonar? La historia se desbloqueará para otros usuarios."
       );
-      if (!confirmAbandon) return;
+      if (!confirmed) return;
     }
 
     if (story) {
@@ -62,9 +62,8 @@ const CollaboratePage = () => {
       }
     }
     navigate("/");
-  }, [story, navigate]);
+  }, [story, navigate, showConfirm]);
 
-  // 🔹 3. Temporizador (30 min)
   useEffect(() => {
     if (!story) return;
 
@@ -72,8 +71,8 @@ const CollaboratePage = () => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          alert("⏰ Tiempo agotado. La historia se desbloqueará.");
-          handleAbandon(false);
+          showToast("⏰ Tiempo agotado. La historia se desbloqueará.", 'warning', 3000);
+          setTimeout(() => handleAbandon(false), 3000);
           return 0;
         }
         return prev - 1;
@@ -81,7 +80,7 @@ const CollaboratePage = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [story, handleAbandon]);
+  }, [story, handleAbandon, showToast]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -89,12 +88,11 @@ const CollaboratePage = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // 🔹 4. Enviar colaboración
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (collaborationText.length < 40 || collaborationText.length > 260) {
-      alert("La colaboración debe tener entre 40 y 260 caracteres.");
+      showToast("La colaboración debe tener entre 40 y 260 caracteres.", 'warning', 3000);
       return;
     }
 
@@ -109,21 +107,22 @@ const CollaboratePage = () => {
       await unlockStory(story.storyId);
       console.log('✅ Historia desbloqueada');
       
-      alert("¡Colaboración enviada con éxito!");
-      navigate("/");
+      showToast("¡Colaboración enviada con éxito!", 'success', 2500);
+      setTimeout(() => {
+        navigate("/");
+      }, 2500);
     } catch (error) {
       console.error("❌ Error al enviar colaboración:", error);
       console.error("Response:", error.response?.data);
       console.error("Status:", error.response?.status);
       
       const errorMsg = error.response?.data?.message || error.message;
-      alert(`Error: ${errorMsg}`);
+      showToast(`Error: ${errorMsg}`, 'error', 4000);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // 🔹 5. Loading state
   if (error) {
     return (
       <div className="collaborate-page">
@@ -148,14 +147,12 @@ const CollaboratePage = () => {
   return (
     <div className="collaborate-page">
       <div className="collaborate-container">
-        {/* Temporizador */}
         <div className="collaborate-info">
           <div className="timer-badge">
             ⏱️ {formatTime(timeRemaining)}
           </div>
         </div>
 
-        {/* Instrucciones */}
         <div className="collaborate-instructions">
           <p className="instruction-main">
             Escribe una colaboración de entre 40 y 260 caracteres. ¡Usa tu imaginación!
@@ -165,7 +162,6 @@ const CollaboratePage = () => {
           </p>
         </div>
 
-        {/* Colaboración previa */}
         {previousCollaboration && (
           <div className="previous-collaboration-wrapper">
             <Collaboration
@@ -177,12 +173,10 @@ const CollaboratePage = () => {
           </div>
         )}
 
-        {/* Número de colaboración */}
         <div className="collaboration-number-banner">
           Colaboración {story.currentCollaborationNumber} de {story.extension}
         </div>
 
-        {/* Formulario */}
         <form className="collaborate-form" onSubmit={handleSubmit}>
           <textarea
             className="collaborate-textarea"
