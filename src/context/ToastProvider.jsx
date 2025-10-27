@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { ToastContext } from './ToastContext';
 import ToastContainer from '../components/toast/ToastContainer';
+import ConfirmDialog from '../components/ConfirmDialog/ConfirmDialog';
 
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
@@ -43,9 +44,15 @@ export const ToastProvider = ({ children }) => {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      {/* Renderizamos el ToastContainer */}
       <ToastContainer />
-      {/* Si luego quieres un ConfirmDialog, también puedes renderizarlo aquí */}
+      {/* 👇 ESTA ES LA LÍNEA CLAVE QUE FALTABA */}
+      {confirmDialog && (
+        <ConfirmDialog
+          message={confirmDialog.message}
+          onConfirm={confirmDialog.onConfirm}
+          onCancel={confirmDialog.onCancel}
+        />
+      )}
     </ToastContext.Provider>
   );
 };
