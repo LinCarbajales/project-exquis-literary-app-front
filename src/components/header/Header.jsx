@@ -114,9 +114,9 @@ const Header = () => {
               </Link>
               <Link 
                 to="/explore" 
-                className={`nav-link ${location.pathname === '/explore' ? 'active' : ''}`}
+                className={`nav-link ${location.pathname === '/collaborate' ? 'active' : ''}`}
               >
-                Explorar
+                Escribir
               </Link>
               
               {/* Menú de usuario */}
@@ -146,13 +146,6 @@ const Header = () => {
                       onClick={closeUserDropdown}
                     >
                       <span>👤</span> Mi Perfil
-                    </Link>
-                    <Link 
-                      to="/settings" 
-                      className="dropdown-item"
-                      onClick={closeUserDropdown}
-                    >
-                      <span>⚙️</span> Configuración
                     </Link>
                     <hr className="dropdown-divider" />
                     <button onClick={handleLogout} className="dropdown-item logout">
@@ -220,14 +213,11 @@ const Header = () => {
                 <Link to="/stories" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>📚</span> Historias
                 </Link>
-                <Link to="/explore" className="mobile-nav-link" onClick={closeMobileMenu}>
-                  <span>🔍</span> Explorar
+                <Link to="/collaborate" className="mobile-nav-link" onClick={closeMobileMenu}>
+                  <span>🖊️</span> Escribir
                 </Link>
                 <Link to="/userarea" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>👤</span> Mi Perfil
-                </Link>
-                <Link to="/settings" className="mobile-nav-link" onClick={closeMobileMenu}>
-                  <span>⚙️</span> Configuración
                 </Link>
               </div>
               
