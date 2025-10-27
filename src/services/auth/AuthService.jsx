@@ -6,23 +6,28 @@ class AuthService {
     this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
   }
 
-  // 🔹 Iniciar sesión con JWT
+  // 🔹 Iniciar sesión con Basic Auth -> obtener JWT -> obtener usuario
   async loginUser(formData) {
     try {
-      // Validaciones básicas
       if (!formData.email?.trim()) throw new Error('El email es obligatorio');
       if (!formData.password?.trim()) throw new Error('La contraseña es obligatoria');
 
       console.log('🔐 Intentando login para:', formData.email);
 
-      // Llamamos al repository con las credenciales
-      const data = await this.authRepository.login({
+      // Login a través del repositorio
+      const user = await this.authRepository.login({
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       });
 
-      console.log('✅ Login con éxito:', data);
-      return data;
+      console.log('✅ Login exitoso. Usuario obtenido:', user);
+
+      // Guardar datos relevantes (si no los maneja el repository)
+      if (user && user.id_user) {
+        localStorage.setItem('userId', user.id_user);
+      }
+
+      return user;
     } catch (error) {
       console.error('❌ Error en AuthService.loginUser:', error);
       throw error;
@@ -32,6 +37,7 @@ class AuthService {
   // 🔹 Cerrar sesión
   async logoutUser() {
     try {
+      console.log('🚪 Cerrando sesión...');
       await this.authRepository.logout();
       console.log('✅ Logout con éxito');
       return true;
@@ -41,14 +47,13 @@ class AuthService {
     }
   }
 
-  // 🔹 Obtener el usuario actual (con JWT)
+  // 🔹 Obtener el usuario actual (a partir del JWT almacenado)
   async getCurrentUser() {
     try {
-      // Obtenemos el token del localStorage
-      const token = this.authRepository.getToken();
-      
+      const token = this.getToken();
+
       if (!token) {
-        console.warn('⚠️ No hay token de autenticación');
+        console.warn('⚠️ No hay token disponible en localStorage');
         return null;
       }
 
@@ -58,24 +63,20 @@ class AuthService {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Authorization': `Bearer ${token}`, // Enviamos el token JWT
+          'Authorization': `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
-        console.warn('⚠️ No se pudo obtener el usuario actual (sesión expirada o token inválido)');
-        
-        // Si el token es inválido (401 o 403), lo eliminamos
+        console.warn('⚠️ Error al obtener usuario actual:', response.status);
         if (response.status === 401 || response.status === 403) {
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('userId');
+          this.clearSession();
         }
-        
-        throw new Error(`Error ${response.status}: No se pudo obtener el usuario`);
+        return null;
       }
 
       const user = await response.json();
-      console.log('✅ Usuario obtenido:', user);
+      console.log('✅ Usuario actual obtenido:', user);
       return user;
     } catch (error) {
       console.error('❌ Error en AuthService.getCurrentUser:', error);
@@ -85,32 +86,32 @@ class AuthService {
 
   // 🔹 Verificar si el usuario está autenticado
   isAuthenticated() {
-    return this.authRepository.isAuthenticated();
+    const token = this.getToken();
+    return !!token;
   }
 
-  // 🔹 Obtener el token (por si lo necesitas en otros servicios)
+  // 🔹 Obtener token JWT
   getToken() {
-    return this.authRepository.getToken();
+    return localStorage.getItem('token'); // usamos "token" para mantener compatibilidad
   }
 
-  // 🔹 Obtener el userId
+  // 🔹 Obtener userId
   getUserId() {
-    return this.authRepository.getUserId();
+    return localStorage.getItem('userId');
   }
 
-  // 🔹 Obtener el email del usuario
-  getUserEmail() {
-    return this.authRepository.getUserEmail();
+  // 🔹 Limpiar sesión completa
+  clearSession() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
   }
 
-  // 🔹 Obtener el username
-  getUsername() {
-    return this.authRepository.getUsername();
-  }
-
-  // 🔹 Obtener toda la información del usuario guardada
+  // 🔹 (Opcional) Obtener info completa guardada
   getUserInfo() {
-    return this.authRepository.getUserInfo();
+    return {
+      userId: this.getUserId(),
+      token: this.getToken(),
+    };
   }
 }
 

@@ -1,148 +1,74 @@
 class AuthRepository {
-  constructor() {
-    this.baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
-  }
+    constructor() {
+        this.baseUrl = import.meta.env.VITE_API_BASE_URL;
+    }
 
-  /**
-   * 🔑 Login - Obtiene el token JWT
-   */
-  async login(credentials) {
-    try {
-      console.log('📡 Enviando petición de login a:', `${this.baseUrl}/login`);
-      
-      const response = await fetch(`${this.baseUrl}/login`, {
-        method: 'POST',
+async login({ email, password }) {
+    // Construir el token Base64 para Basic Auth
+    const basicAuth = 'Basic ' + btoa(`${email}:${password}`);
+
+    const response = await fetch(`${this.baseUrl}/login`, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+            'Authorization': basicAuth,
+            'Accept': 'application/json',
         },
-        body: JSON.stringify({
-          email: credentials.email,
-          password: credentials.password,
-        }),
-      });
+        credentials: 'include',
+    });
 
-      console.log('📨 Respuesta del servidor:', response.status);
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('❌ Error en login:', errorData);
-        throw new Error(`Error ${response.status}: ${errorData || 'Credenciales incorrectas'}`);
-      }
-
-      const data = await response.json();
-      console.log('✅ Datos recibidos:', data);
-
-      // Guardar el token en localStorage
-      if (data.token) {
-        localStorage.setItem('authToken', data.token);
-        console.log('💾 Token guardado en localStorage');
-      } else {
-        throw new Error('No se recibió token del servidor');
-      }
-
-      // Guardar información del usuario
-      if (data.user) {
-        localStorage.setItem('userId', data.user.id_user.toString());
-        localStorage.setItem('userEmail', data.user.email);
-        localStorage.setItem('username', data.user.username);
-        console.log('💾 Datos de usuario guardados:', data.user);
-      }
-
-      return data;
-    } catch (error) {
-      console.error('❌ Error en AuthRepository.login:', error);
-      throw error;
+    if (!response.ok) {
+        throw new Error(`Error al iniciar sesión (${response.status})`);
     }
-  }
 
-  /**
-   * 🚪 Logout - Elimina el token
-   */
+    const loginData = await response.json();
+    const jwtToken = loginData.token; // ajusta al nombre real del campo
+    localStorage.setItem('jwtToken', jwtToken);
+
+    const userResponse = await fetch(`${this.baseUrl}/users/me`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`,
+        },
+    });
+
+    if (!userResponse.ok) {
+        throw new Error(`Error al obtener usuario (${userResponse.status})`);
+    }
+
+    const user = await userResponse.json();
+    localStorage.setItem('userId', user.id_user);
+
+    return user;
+}
+
   async logout() {
-    try {
-      const token = this.getToken();
+    // Obtener el token JWT guardado
+    const token = localStorage.getItem('token');
 
-      // Si tienes un endpoint de logout en el backend, llámalo aquí
-      if (token) {
-        await fetch(`${this.baseUrl}/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }).catch(err => console.warn('Error al llamar al logout del backend:', err));
-      }
+    const response = await fetch(`${this.baseUrl}/logout`, {
+      method: 'GET', // ✅ Cambiado de POST a GET
+      headers: {
+        'Authorization': `Bearer ${token}`, // ✅ Enviar JWT en lugar de Basic Auth
+        'Accept': 'application/json',
+      },
+      credentials: 'include',
+    });
 
-      // Limpiar localStorage
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('username');
-      console.log('🧹 Token y datos de usuario eliminados de localStorage');
-
-      return true;
-    } catch (error) {
-      console.error('❌ Error en AuthRepository.logout:', error);
-      // Aunque falle, limpiamos el localStorage
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('username');
-      throw error;
+    if (!response.ok) {
+      throw new Error('Error al cerrar sesión');
     }
-  }
 
-  /**
-   * 🔍 Verifica si hay un token guardado
-   */
-  isAuthenticated() {
-    const token = this.getToken();
-    return !!token;
-  }
+    // Limpiar almacenamiento local
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token'); // ✅ También eliminar el token
 
-  /**
-   * 🎫 Obtiene el token del localStorage
-   */
-  getToken() {
-    return localStorage.getItem('authToken');
-  }
-
-  /**
-   * 👤 Obtiene el userId del localStorage
-   */
-  getUserId() {
-    const userId = localStorage.getItem('userId');
-    return userId ? parseInt(userId, 10) : null;
-  }
-
-  /**
-   * 📧 Obtiene el email del usuario del localStorage
-   */
-  getUserEmail() {
-    return localStorage.getItem('userEmail');
-  }
-
-  /**
-   * 👤 Obtiene el username del localStorage
-   */
-  getUsername() {
-    return localStorage.getItem('username');
-  }
-
-  /**
-   * 👥 Obtiene toda la información del usuario del localStorage
-   */
-  getUserInfo() {
-    const userId = this.getUserId();
-    const userEmail = this.getUserEmail();
-    const username = this.getUsername();
-    
-    if (!userId) return null;
-    
-    return {
-      id_user: userId,
-      email: userEmail,
-      username: username,
-    };
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      return await response.json();
+    } else {
+      return;
+    }
   }
 }
 

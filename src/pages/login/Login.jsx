@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import '../register/Register.css';
@@ -9,7 +9,14 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth(); // ← Usar el contexto
+  const { login, isAuthenticated } = useAuth();
+
+  // 🔹 Redirige automáticamente al home si ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -17,19 +24,17 @@ const Login = () => {
 
     try {
       console.log('🔐 Intentando login...');
-      
-      // Usar el login del contexto en lugar de authService directamente
       const result = await login(data);
-      
+
       if (result && result.token) {
-        console.log('✅ Login exitoso, redirigiendo...');
-        navigate('/'); // redirige al home
+        console.log('✅ Login exitoso, actualizando estado y redirigiendo...');
+        // No es necesario llamar a navigate() aquí,
+        // el useEffect superior se encargará de redirigir automáticamente
       }
     } catch (error) {
       console.error('❌ Error en login:', error);
-      
       const errorMessage = error.message || '';
-      
+
       if (errorMessage.includes('401') || errorMessage.includes('Credenciales')) {
         setSubmitError('Credenciales incorrectas. Verifica tu email y contraseña.');
       } else if (errorMessage.includes('403')) {
@@ -54,9 +59,7 @@ const Login = () => {
             <span className="quill-icon">🖋️</span>
           </div>
           <h1 className="register-title">Inicia sesión</h1>
-          <p className="register-subtitle">
-            Retoma tus historias inconclusas en Exquis
-          </p>
+          <p className="register-subtitle">Retoma tus historias inconclusas en Exquis</p>
         </div>
 
         <form className="register-form" onSubmit={handleSubmit(onSubmit)}>
@@ -83,8 +86,8 @@ const Login = () => {
                     required: 'El email es obligatorio',
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Email no válido'
-                    }
+                      message: 'Email no válido',
+                    },
                   })}
                   className={`register-input ${errors.email ? 'register-input-error' : ''}`}
                 />
@@ -103,7 +106,7 @@ const Login = () => {
                   placeholder="••••••••"
                   {...register('password', {
                     required: 'La contraseña es obligatoria',
-                    minLength: { value: 8, message: 'Mínimo 8 caracteres' }
+                    minLength: { value: 8, message: 'Mínimo 8 caracteres' },
                   })}
                   className={`register-input ${errors.password ? 'register-input-error' : ''}`}
                 />

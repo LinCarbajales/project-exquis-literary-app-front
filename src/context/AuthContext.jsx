@@ -1,50 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { AuthContext } from './AuthContext'; // Importamos desde el nuevo archivo
+import { AuthContext } from './AuthContext';
 import authService from '../services/auth/AuthService';
 
-// Provider del contexto
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 🔹 Inicializar el estado de autenticación al cargar la app
+  // 🔹 Inicializar autenticación al cargar la app
   useEffect(() => {
-    const initAuth = () => {
-      // Verificar si hay token en localStorage
-      const hasToken = authService.isAuthenticated();
-      
-      if (hasToken) {
-        // Obtener info del usuario del localStorage
-        const userInfo = authService.getUserInfo();
-        
-        if (userInfo) {
-          setUser(userInfo);
-          setIsAuthenticated(true);
-          console.log('✅ Usuario autenticado:', userInfo);
+    const initAuth = async () => {
+      try {
+        const token = authService.getToken();
+        if (token) {
+          const currentUser = await authService.getCurrentUser();
+          if (currentUser) {
+            setUser(currentUser);
+            setIsAuthenticated(true);
+            console.log('✅ Usuario autenticado al iniciar:', currentUser);
+          } else {
+            authService.clearSession();
+            setUser(null);
+            setIsAuthenticated(false);
+          }
         }
+      } catch (err) {
+        console.error('❌ Error al inicializar auth:', err);
+        setUser(null);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
 
     initAuth();
   }, []);
 
-  // 🔹 Login: actualiza el estado y el localStorage
+  // 🔹 Login
   const login = async (credentials) => {
     try {
-      const result = await authService.loginUser(credentials);
-      
-      if (result && result.token) {
-        // Obtener la info del usuario del localStorage (ya guardada por AuthRepository)
-        const userInfo = authService.getUserInfo();
-        
-        setUser(userInfo);
+      console.log('🟢 Intentando login en AuthContext...');
+      const user = await authService.loginUser(credentials);
+
+      if (user) {
+        setUser(user);
         setIsAuthenticated(true);
-        console.log('✅ Login exitoso en AuthContext:', userInfo);
-        
-        return result;
+        console.log('✅ Login exitoso en AuthContext:', user);
+        return user;
+      } else {
+        console.warn('⚠️ Login sin usuario devuelto');
+        throw new Error('Error al obtener usuario después del login');
       }
     } catch (error) {
       console.error('❌ Error en login:', error);
@@ -52,37 +57,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Logout: limpia el estado y el localStorage
+  // 🔹 Logout
   const logout = async () => {
     try {
       await authService.logoutUser();
+    } catch (err) {
+      console.error('⚠️ Error en logout:', err);
+    } finally {
       setUser(null);
       setIsAuthenticated(false);
-      console.log('✅ Logout exitoso en AuthContext');
-    } catch (error) {
-      console.error('❌ Error en logout:', error);
-      // Aunque falle, limpiamos el estado
-      setUser(null);
-      setIsAuthenticated(false);
+      authService.clearSession();
+      console.log('✅ Logout exitoso');
     }
   };
 
-  // 🔹 Actualizar info del usuario (después de editar perfil)
+  // 🔹 Actualizar info de usuario (por ejemplo, al editar perfil)
   const updateUser = (newUserData) => {
-    setUser(prevUser => ({
-      ...prevUser,
-      ...newUserData,
-    }));
-    
-    // Actualizar también en localStorage
-    if (newUserData.email) {
-      localStorage.setItem('userEmail', newUserData.email);
-    }
-    if (newUserData.username) {
-      localStorage.setItem('username', newUserData.username);
-    }
-    
-    console.log('✅ Usuario actualizado en AuthContext:', newUserData);
+    setUser((prev) => ({ ...prev, ...newUserData }));
+    console.log('✅ Usuario actualizado en contexto:', newUserData);
   };
 
   // Valor del contexto
@@ -95,25 +87,22 @@ export const AuthProvider = ({ children }) => {
     updateUser,
   };
 
-  // Si está cargando, puedes mostrar un loader
   if (isLoading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        fontSize: '1.5rem',
-        color: '#666'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          fontSize: '1.5rem',
+          color: '#666',
+        }}
+      >
         Cargando...
       </div>
     );
   }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
