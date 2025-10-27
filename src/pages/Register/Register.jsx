@@ -3,52 +3,51 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import './Register.css';
 import registerService from '../../services/register/RegisterService';
+import { useToast } from '../../context/useToast';
 
 const Register = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
-  // Para comparar contraseñas
   const watchPassword = watch("password");
 
-const onSubmit = async (data) => {
-  setIsLoading(true);
-  setSubmitError('');
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    setSubmitError('');
 
-  try {
-    // Preparar datos para enviar
-    const registerData = {
-      username: data.username,
-      name: data.name,
-      surname: data.surname,
-      email: data.email,
-      password: data.password,
-    };
-    
-    // Llamar a tu servicio
-    const result = await registerService.registerUser(registerData);
-    
-    if (result.success) {
-      alert('Registro completado');
-      navigate('/login');
+    try {
+      const registerData = {
+        username: data.username,
+        name: data.name,
+        surname: data.surname,
+        email: data.email,
+        password: data.password,
+      };
+      
+      const result = await registerService.registerUser(registerData);
+      
+      if (result.success) {
+        showToast('¡Registro completado con éxito!', 'success', 2500);
+        setTimeout(() => {
+          navigate('/login');
+        }, 2500);
+      }
+      
+    } catch (error) {
+      console.error('Error en el registro:', error);
+      setSubmitError(error.message || 'Error al procesar el registro');
+    } finally {
+      setIsLoading(false);
     }
-    
-  } catch (error) {
-    console.error('Error en el registro:', error);
-    setSubmitError(error.message || 'Error al procesar el registro');
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
     <>
-      
       <div className="register-page">
         <div className="register-container">
-          {/* Cabecera decorativa */}
           <div className="register-header">
             <div className="register-decoration">
               <span className="quill-icon">🖋️</span>
@@ -59,10 +58,8 @@ const onSubmit = async (data) => {
             </p>
           </div>
 
-          {/* Formulario */}
           <form className="register-form" onSubmit={handleSubmit(onSubmit)}>
             
-            {/* Error general */}
             {submitError && (
               <div className="register-error-general">
                 <span className="error-icon">⚠️</span>
@@ -70,7 +67,6 @@ const onSubmit = async (data) => {
               </div>
             )}
 
-            {/* Datos de usuario */}
             <section className="register-section">
               <h2 className="register-section-title">Datos personales</h2>
               
@@ -153,7 +149,6 @@ const onSubmit = async (data) => {
               </div>
             </section>
 
-            {/* Datos de contacto */}
             <section className="register-section">
               <h2 className="register-section-title">Datos de Contacto</h2>
               
@@ -182,7 +177,6 @@ const onSubmit = async (data) => {
               </div>
             </section>
 
-            {/* Contraseña */}
             <section className="register-section">
               <h2 className="register-section-title">Seguridad</h2>
               
@@ -239,7 +233,6 @@ const onSubmit = async (data) => {
               </div>
             </section>
 
-            {/* Términos y condiciones */}
             <div className="register-terms">
               <label className="register-checkbox-label">
                 <input
@@ -262,7 +255,6 @@ const onSubmit = async (data) => {
               )}
             </div>
 
-            {/* Botón de envío */}
             <div className="register-actions">
               <button
                 type="submit"
@@ -283,7 +275,6 @@ const onSubmit = async (data) => {
               </button>
             </div>
 
-            {/* Link a login */}
             <div className="register-footer">
               <p>
                 ¿Ya tienes una cuenta?{' '}

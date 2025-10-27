@@ -1,266 +1,210 @@
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './UserArea.css';
+import { assignStory, createCollaboration, unlockStory } from '../../services/api';
+import '../collaboratePage/collaboratePage';
+import Collaboration from '../../components/collaboration/Collaboration';
 import Button from '../../components/Button/Button';
-import userService from '../../services/user/UserService';
-import authService from '../../services/auth/AuthService';
-import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/useToast';
 
-
-const UserArea = () => {
+const CollaboratePage = () => {
   const navigate = useNavigate();
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const { updateUser } = useAuth();
+  const hasRequestedStory = useRef(false);
+  const { showToast, showConfirm } = useToast();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [story, setStory] = useState(null);
+  const [previousCollaboration, setPreviousCollaboration] = useState(null);
+  const [collaborationText, setCollaborationText] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(30 * 60);
+  const [error, setError] = useState(null);
 
-  // 🔹 Cargar datos del usuario al montar el componente
   useEffect(() => {
-    const fetchUser = async () => {
-      // Verificar si hay token
-      if (!authService.isAuthenticated()) {
-        console.warn('⚠️ No hay token, redirigiendo al login');
-        navigate('/login');
-        return;
-      }
+    if (hasRequestedStory.current) return;
+    hasRequestedStory.current = true;
 
-      setIsLoading(true);
-      setSubmitError('');
-
+    const fetchStory = async () => {
       try {
-        console.log('📡 Cargando datos del usuario...');
-        const currentUser = await userService.getCurrentUser();
-        console.log('✅ Datos recibidos:', currentUser);
-        
-        // Rellenar el formulario con los datos del usuario
-        reset({
-          username: currentUser.username || '',
-          name: currentUser.name || '',
-          surname: currentUser.surname || '',
-          email: currentUser.email || '',
-          password: '', // Siempre vacío por seguridad
-        });
-      } catch (error) {
-        console.error('❌ Error al cargar datos:', error);
-        
-        if (error.message?.includes('401') || error.message?.includes('403')) {
-          setSubmitError('Sesión expirada. Por favor, inicia sesión de nuevo.');
-          setTimeout(() => {
-            authService.logoutUser();
-            navigate('/login');
-          }, 2000);
-        } else {
-          setSubmitError('No se pudieron cargar tus datos. Inténtalo de nuevo.');
+        console.log('📡 Solicitando historia...');
+        const storyData = await assignStory();
+        console.log('✅ Historia asignada:', storyData);
+        setStory(storyData);
+
+        if (storyData.previousCollaboration) {
+          setPreviousCollaboration(storyData.previousCollaboration);
         }
-      } finally {
-        setIsLoading(false);
+      } catch (error) {
+        console.error("❌ Error al asignar historia:", error);
+        const errorMsg = error.response?.data?.message || error.message;
+        setError(errorMsg);
+        showToast(`Error: ${errorMsg}`, 'error', 4000);
+        navigate("/");
       }
     };
 
-    fetchUser();
-  }, [reset, navigate]);
+    fetchStory();
+  }, [navigate, showToast]);
 
-  // 🔹 Guardar cambios del usuario
-  const onSubmit = async (formData) => {
-    setIsLoading(true);
-    setSubmitError('');
-    setSuccessMessage('');
-
-    try {
-      console.log('📤 Enviando actualización:', formData);
-      
-      // Si la contraseña está vacía, no la enviamos
-      const dataToSend = { ...formData };
-      if (!dataToSend.password || dataToSend.password.trim() === '') {
-        delete dataToSend.password;
-      }
-      
-      const updatedUser = await userService.updateUser(dataToSend);
-      console.log('✅ Usuario actualizado:', updatedUser);
-
-      // 🔸 ACTUALIZAR EL CONTEXTO GLOBAL DE AUTENTICACIÓN
-      updateUser(updatedUser);
-      
-      setSuccessMessage('Datos actualizados correctamente ✨');
-      
-      // Limpiar el mensaje después de 5 segundos
-      setTimeout(() => setSuccessMessage(''), 5000);
-      
-    } catch (error) {
-      console.error('❌ Error al actualizar:', error);
-      
-      const errorMessage = error.message || '';
-      
-      if (errorMessage.includes('401') || errorMessage.includes('403')) {
-        setSubmitError('Sesión expirada. Redirigiendo al login...');
-        setTimeout(() => {
-          authService.logoutUser();
-          navigate('/login');
-        }, 2000);
-      } else if (errorMessage.includes('seudónimo') || errorMessage.includes('username')) {
-        setSubmitError('El seudónimo ya está en uso por otro usuario.');
-      } else if (errorMessage.includes('email')) {
-        setSubmitError('El email ya está en uso por otro usuario.');
-      } else {
-        setSubmitError(errorMessage || 'Error al actualizar los datos. Inténtalo de nuevo.');
-      }
-    } finally {
-      setIsLoading(false);
+  const handleAbandon = useCallback(async (showConfirmDialog = true) => {
+    if (showConfirmDialog) {
+      const confirmed = await showConfirm(
+        "¿Seguro que deseas abandonar? La historia se desbloqueará para otros usuarios."
+      );
+      if (!confirmed) return;
     }
+
+    if (story) {
+      try {
+        console.log('🔓 Abandonando historia:', story.storyId);
+        await unlockStory(story.storyId);
+        console.log('✅ Historia desbloqueada al abandonar');
+      } catch (err) {
+        console.error("❌ Error al desbloquear historia:", err);
+      }
+    }
+    navigate("/");
+  }, [story, navigate, showConfirm]);
+
+  useEffect(() => {
+    if (!story) return;
+
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          showToast("⏰ Tiempo agotado. La historia se desbloqueará.", 'warning', 3000);
+          setTimeout(() => handleAbandon(false), 3000);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [story, handleAbandon, showToast]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // 🔹 Eliminar cuenta
-  const handleDeleteAccount = async () => {
-    const confirmDelete = window.confirm(
-      '¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.'
-    );
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
-    if (!confirmDelete) return;
+    if (collaborationText.length < 40 || collaborationText.length > 260) {
+      showToast("La colaboración debe tener entre 40 y 260 caracteres.", 'warning', 3000);
+      return;
+    }
 
+    setIsSubmitting(true);
     try {
-      console.log('🗑️ Eliminando cuenta...');
-      await userService.deleteAccount();
-      console.log('✅ Cuenta eliminada');
+      console.log('📤 Enviando colaboración para historia:', story.storyId);
       
-      alert('Tu cuenta ha sido eliminada.');
+      await createCollaboration(story.storyId, collaborationText);
+      console.log('✅ Colaboración enviada');
       
-      // El userService ya limpia el localStorage
-      navigate('/login');
+      console.log('🔓 Desbloqueando historia:', story.storyId);
+      await unlockStory(story.storyId);
+      console.log('✅ Historia desbloqueada');
       
+      showToast("¡Colaboración enviada con éxito!", 'success', 2500);
+      setTimeout(() => {
+        navigate("/");
+      }, 2500);
     } catch (error) {
-      console.error('❌ Error al eliminar cuenta:', error);
-      alert('Error al eliminar la cuenta. Inténtalo de nuevo.');
+      console.error("❌ Error al enviar colaboración:", error);
+      console.error("Response:", error.response?.data);
+      console.error("Status:", error.response?.status);
+      
+      const errorMsg = error.response?.data?.message || error.message;
+      showToast(`Error: ${errorMsg}`, 'error', 4000);
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (error) {
+    return (
+      <div className="collaborate-page">
+        <div className="collaborate-container">
+          <p className="error-message">❌ {error}</p>
+          <Button onClick={() => navigate("/")}>Volver al inicio</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!story) {
+    return (
+      <div className="collaborate-page">
+        <div className="collaborate-container">
+          <p>⏳ Cargando historia...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="userarea-page">
-      <div className="userarea-container">
-        <div className="userarea-header">
-          <span className="quill-icon">🖋️</span>
-          <h1 className="userarea-title">Área de Usuario</h1>
-          <p className="userarea-subtitle">
-            Modifica tus datos o elimina tu cuenta
+    <div className="collaborate-page">
+      <div className="collaborate-container">
+        <div className="collaborate-info">
+          <div className="timer-badge">
+            ⏱️ {formatTime(timeRemaining)}
+          </div>
+        </div>
+
+        <div className="collaborate-instructions">
+          <p className="instruction-main">
+            Escribe una colaboración de entre 40 y 260 caracteres. ¡Usa tu imaginación!
+          </p>
+          <p className="instruction-detail">
+            Tienes un máximo de 30 minutos para escribir tu colaboración.
           </p>
         </div>
 
-        <form className="userarea-form" onSubmit={handleSubmit(onSubmit)}>
-          {submitError && <div className="userarea-error">{submitError}</div>}
-          {successMessage && (
-            <div className="userarea-success">{successMessage}</div>
-          )}
+        {previousCollaboration && (
+          <div className="previous-collaboration-wrapper">
+            <Collaboration
+              username={previousCollaboration.user?.username || 'Anónimo'}
+              text={previousCollaboration.text}
+              isPrevious={true}
+              showSeparator={true}
+            />
+          </div>
+        )}
 
-          <section className="userarea-section">
-            <h2 className="userarea-section-title">Datos personales</h2>
+        <div className="collaboration-number-banner">
+          Colaboración {story.currentCollaborationNumber} de {story.extension}
+        </div>
 
-            <div className="userarea-row">
-              <div className="userarea-field">
-                <label className="userarea-label">Seudónimo</label>
-                <input
-                  type="text"
-                  disabled={isLoading}
-                  {...register('username', { required: 'Campo obligatorio' })}
-                  className={`userarea-input ${errors.username ? 'userarea-input-error' : ''}`}
-                />
-                {errors.username && (
-                  <p className="userarea-error-text">
-                    {errors.username.message}
-                  </p>
-                )}
-              </div>
-            </div>
+        <form className="collaborate-form" onSubmit={handleSubmit}>
+          <textarea
+            className="collaborate-textarea"
+            value={collaborationText}
+            onChange={(e) => setCollaborationText(e.target.value)}
+            placeholder="Escribe tu colaboración..."
+            maxLength={260}
+            disabled={isSubmitting}
+          />
+          <div className="char-counter">
+            {collaborationText.length} / 260 caracteres
+          </div>
 
-            <div className="userarea-row">
-              <div className="userarea-field">
-                <label className="userarea-label">Nombre</label>
-                <input
-                  type="text"
-                  disabled={isLoading}
-                  {...register('name', { required: 'Campo obligatorio' })}
-                  className={`userarea-input ${errors.name ? 'userarea-input-error' : ''}`}
-                />
-                {errors.name && (
-                  <p className="userarea-error-text">{errors.name.message}</p>
-                )}
-              </div>
-
-              <div className="userarea-field">
-                <label className="userarea-label">Apellidos</label>
-                <input
-                  type="text"
-                  disabled={isLoading}
-                  {...register('surname', { required: 'Campo obligatorio' })}
-                  className={`userarea-input ${errors.surname ? 'userarea-input-error' : ''}`}
-                />
-                {errors.surname && (
-                  <p className="userarea-error-text">
-                    {errors.surname.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </section>
-
-          <section className="userarea-section">
-            <h2 className="userarea-section-title">Datos de contacto</h2>
-            <div className="userarea-row">
-              <div className="userarea-field">
-                <label className="userarea-label">Correo electrónico</label>
-                <input
-                  type="email"
-                  disabled={isLoading}
-                  {...register('email', { required: 'Campo obligatorio' })}
-                  className={`userarea-input ${errors.email ? 'userarea-input-error' : ''}`}
-                />
-                {errors.email && (
-                  <p className="userarea-error-text">{errors.email.message}</p>
-                )}
-              </div>
-            </div>
-          </section>
-
-          <section className="userarea-section">
-            <h2 className="userarea-section-title">Seguridad</h2>
-            <div className="userarea-row">
-              <div className="userarea-field">
-                <label className="userarea-label">Nueva contraseña</label>
-                <input
-                  type="password"
-                  disabled={isLoading}
-                  placeholder="Dejar vacío para no cambiar"
-                  {...register('password')}
-                  className="userarea-input"
-                />
-                <small style={{ color: '#666', fontSize: '0.85rem', marginTop: '4px', display: 'block' }}>
-                  Solo completa este campo si quieres cambiar tu contraseña
-                </small>
-              </div>
-            </div>
-          </section>
-
-          <div className="userarea-actions">
+          <div className="form-actions">
+            <Button
+              type="button"
+              variant="tertiary"
+              onClick={() => handleAbandon(true)}
+              disabled={isSubmitting}
+            >
+              Abandonar
+            </Button>
             <Button
               type="submit"
               variant="primary"
-              size="medium"
-              loading={isLoading}
-              icon="💾"
+              disabled={isSubmitting || collaborationText.length < 40}
             >
-              Guardar Cambios
-            </Button>
-
-            <Button
-              type="button"
-              variant="danger"
-              size="medium"
-              onClick={handleDeleteAccount}
-              icon="🗑️"
-              disabled={isLoading}
-            >
-              Eliminar Cuenta
+              {isSubmitting ? "Enviando..." : "Enviar Colaboración"}
             </Button>
           </div>
         </form>
@@ -269,4 +213,4 @@ const UserArea = () => {
   );
 };
 
-export default UserArea;
+export default CollaboratePage;
