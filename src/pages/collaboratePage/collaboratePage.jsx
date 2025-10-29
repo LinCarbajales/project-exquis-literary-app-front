@@ -15,9 +15,10 @@ const CollaboratePage = () => {
   const [previousCollaboration, setPreviousCollaboration] = useState(null);
   const [collaborationText, setCollaborationText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(30 * 60);
+  const [timeRemaining, setTimeRemaining] = useState(30 * 60); // fallback 30 min
   const [error, setError] = useState(null);
 
+  // 🔹 Solicita historia y sincroniza el timer real desde el backend
   useEffect(() => {
     if (hasRequestedStory.current) return;
     hasRequestedStory.current = true;
@@ -28,6 +29,13 @@ const CollaboratePage = () => {
         const storyData = await assignStory();
         console.log('✅ Historia asignada:', storyData);
         setStory(storyData);
+
+        // 🕒 Usa el tiempo restante real desde backend si existe
+        if (storyData.timeRemaining) {
+          setTimeRemaining(storyData.timeRemaining);
+        } else if (storyData.timeLimit) {
+          setTimeRemaining(storyData.timeLimit);
+        }
 
         if (storyData.previousCollaboration) {
           setPreviousCollaboration(storyData.previousCollaboration);
@@ -44,6 +52,7 @@ const CollaboratePage = () => {
     fetchStory();
   }, [navigate, showToast]);
 
+  // 🔹 Función para abandonar historia manual o automático
   const handleAbandon = useCallback(async (showConfirmDialog = true) => {
     if (showConfirmDialog) {
       const confirmed = await showConfirm(
@@ -61,9 +70,11 @@ const CollaboratePage = () => {
         console.error("❌ Error al desbloquear historia:", err);
       }
     }
+
     navigate("/");
   }, [story, navigate, showConfirm]);
 
+  // 🔹 Timer que cuenta hacia atrás y expulsa al expirar
   useEffect(() => {
     if (!story) return;
 
@@ -82,15 +93,17 @@ const CollaboratePage = () => {
     return () => clearInterval(timer);
   }, [story, handleAbandon, showToast]);
 
+  // 🔹 Formatea minutos y segundos
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // 🔹 Envío de colaboración
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (collaborationText.length < 40 || collaborationText.length > 260) {
       showToast("La colaboración debe tener entre 40 y 260 caracteres.", 'warning', 3000);
       return;
@@ -99,23 +112,17 @@ const CollaboratePage = () => {
     setIsSubmitting(true);
     try {
       console.log('📤 Enviando colaboración para historia:', story.storyId);
-      
       await createCollaboration(story.storyId, collaborationText);
       console.log('✅ Colaboración enviada');
-      
+
       console.log('🔓 Desbloqueando historia:', story.storyId);
       await unlockStory(story.storyId);
       console.log('✅ Historia desbloqueada');
-      
+
       showToast("¡Colaboración enviada con éxito!", 'success', 2500);
-      setTimeout(() => {
-        navigate("/");
-      }, 2500);
+      setTimeout(() => navigate("/"), 2500);
     } catch (error) {
       console.error("❌ Error al enviar colaboración:", error);
-      console.error("Response:", error.response?.data);
-      console.error("Status:", error.response?.status);
-      
       const errorMsg = error.response?.data?.message || error.message;
       showToast(`Error: ${errorMsg}`, 'error', 4000);
     } finally {
@@ -123,6 +130,7 @@ const CollaboratePage = () => {
     }
   };
 
+  // 🔹 Renderizado de estados
   if (error) {
     return (
       <div className="collaborate-page">
@@ -144,13 +152,12 @@ const CollaboratePage = () => {
     );
   }
 
+  // 🔹 Render principal
   return (
     <div className="collaborate-page">
       <div className="collaborate-container">
         <div className="collaborate-info">
-          <div className="timer-badge">
-            ⏱️ {formatTime(timeRemaining)}
-          </div>
+          <div className="timer-badge">⏱️ {formatTime(timeRemaining)}</div>
         </div>
 
         <div className="collaborate-instructions">
@@ -172,10 +179,6 @@ const CollaboratePage = () => {
             />
           </div>
         )}
-
-        <div className="collaboration-number-banner">
-          Colaboración {story.currentCollaborationNumber} de {story.extension}
-        </div>
 
         <form className="collaborate-form" onSubmit={handleSubmit}>
           <textarea
