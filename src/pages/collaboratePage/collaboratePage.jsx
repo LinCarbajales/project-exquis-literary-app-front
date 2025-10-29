@@ -75,15 +75,25 @@ const CollaboratePage = () => {
   }, [story, navigate, showConfirm]);
 
   // 🔹 Timer que cuenta hacia atrás y expulsa al expirar
+  const [hasTimedOut, setHasTimedOut] = useState(false);
+  const toastShownRef = useRef(false);
+
   useEffect(() => {
-    if (!story) return;
+    if (!story || hasTimedOut) return;
 
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          showToast("⏰ Tiempo agotado. La historia se desbloqueará.", 'warning', 3000);
-          setTimeout(() => handleAbandon(false), 3000);
+          setHasTimedOut(true);
+          
+          // Solo mostrar el toast una vez
+          if (!toastShownRef.current) {
+            toastShownRef.current = true;
+            showToast("⏰ Tiempo agotado.", 'warning', 3000);
+            setTimeout(() => handleAbandon(false), 3000);
+          }
+          
           return 0;
         }
         return prev - 1;
@@ -91,7 +101,7 @@ const CollaboratePage = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [story, handleAbandon, showToast]);
+  }, [story, handleAbandon, showToast, hasTimedOut]);
 
   // 🔹 Formatea minutos y segundos
   const formatTime = (seconds) => {
