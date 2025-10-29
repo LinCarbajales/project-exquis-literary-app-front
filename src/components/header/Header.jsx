@@ -113,7 +113,7 @@ const Header = () => {
                 Historias
               </Link>
               <Link 
-                to="/explore" 
+                to="/collaborate" 
                 className={`nav-link ${location.pathname === '/collaborate' ? 'active' : ''}`}
               >
                 Escribir

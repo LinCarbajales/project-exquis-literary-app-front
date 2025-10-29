@@ -22,7 +22,8 @@ async login({ email, password }) {
 
     const loginData = await response.json();
     const jwtToken = loginData.token; // ajusta al nombre real del campo
-    localStorage.setItem('jwtToken', jwtToken);
+    
+    localStorage.setItem('token', jwtToken);
 
     const userResponse = await fetch(`${this.baseUrl}/users/me`, {
         method: 'GET',
@@ -47,9 +48,9 @@ async login({ email, password }) {
     const token = localStorage.getItem('token');
 
     const response = await fetch(`${this.baseUrl}/logout`, {
-      method: 'GET', // ✅ Cambiado de POST a GET
+      method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`, // ✅ Enviar JWT en lugar de Basic Auth
+        'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
       },
       credentials: 'include',
@@ -61,7 +62,7 @@ async login({ email, password }) {
 
     // Limpiar almacenamiento local
     localStorage.removeItem('userId');
-    localStorage.removeItem('token'); // ✅ También eliminar el token
+    localStorage.removeItem('token');
 
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.indexOf("application/json") !== -1) {

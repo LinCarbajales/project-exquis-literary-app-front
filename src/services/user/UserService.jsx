@@ -7,7 +7,8 @@ class UserService {
    * Obtiene el token del localStorage
    */
   getToken() {
-    return localStorage.getItem('authToken');
+    // ✅ Usar 'token' en lugar de 'authToken'
+    return localStorage.getItem('token');
   }
 
   /**
@@ -16,7 +17,7 @@ class UserService {
   getAuthHeaders() {
     const token = this.getToken();
     
-    console.log('🔑 Token disponible:', token ? 'SÍ' : 'NO');
+    console.log('🔑 Token disponible:', token ? 'Sí' : 'NO');
     if (token) {
       console.log('🔑 Token (primeros 20 chars):', token.substring(0, 20) + '...');
     }
@@ -115,8 +116,7 @@ class UserService {
 
       console.log('✅ Cuenta eliminada');
       
-      // Limpiar el localStorage
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('token');
       localStorage.removeItem('userId');
       localStorage.removeItem('userEmail');
       localStorage.removeItem('username');
