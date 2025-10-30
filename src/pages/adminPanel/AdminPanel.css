@@ -1,0 +1,180 @@
+/* src/pages/AdminPanel/AdminPanel.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Kalam:wght@400;700&display=swap');
+
+/* Estilo de página base, reutilizando el fondo y la tipografía */
+.admin-page {
+  min-height: 100vh;
+  background: var(--paper-gradient);
+  font-family: 'Crimson Text', serif;
+  color: var(--ink-black);
+  padding: 120px 2rem 4rem;
+}
+
+.admin-container {
+  max-width: 900px;
+  margin: 0 auto;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Header */
+.admin-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.admin-title {
+  font-family: 'Kalam', cursive;
+  font-size: 2.5rem;
+  color: var(--coffee-brown);
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+}
+
+.admin-subtitle {
+  font-size: 1.2rem;
+  color: var(--sepia-brown);
+  margin: 0;
+  font-style: italic;
+}
+
+.quill-icon {
+  font-size: 2.5rem;
+  animation: float 3s ease-in-out infinite;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Secciones de Contenido */
+.admin-section {
+    background: var(--paper-white);
+    border: 2px solid var(--border-light);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px var(--shadow-light);
+    margin-bottom: 3rem;
+}
+
+.admin-section-title {
+  font-family: 'Kalam', cursive;
+  font-size: 1.8rem;
+  color: var(--coffee-brown);
+  border-bottom: 2px dashed var(--border-light);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Estilos para Mensajes de Estado */
+.admin-status {
+  text-align: center;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px var(--shadow-light);
+}
+
+.admin-status p {
+    margin: 0;
+}
+
+.loading-state {
+    background: var(--aged-paper);
+    color: var(--sepia-brown);
+}
+
+.error-state {
+  background: rgba(139, 69, 19, 0.1);
+  border: 2px solid var(--error-red);
+  color: var(--error-red);
+}
+
+.success-state {
+  background: rgba(124, 152, 133, 0.1);
+  border: 2px solid var(--success-green);
+  color: var(--success-green);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 2rem 2rem;
+  background: var(--parchment);
+  border: 2px solid var(--border-light);
+  border-radius: 16px;
+  margin-top: 1rem;
+}
+
+.empty-text {
+  font-size: 1.1rem;
+  color: var(--sepia-brown);
+  font-style: italic;
+  margin: 0;
+}
+
+
+/* --------------------- Lista de Usuarios --------------------- */
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.user-admin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: var(--aged-paper);
+  border-radius: 8px;
+  border-left: 4px solid var(--autumn-gold);
+  box-shadow: 0 1px 4px var(--shadow-light);
+}
+
+.user-info-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1rem;
+}
+
+.user-info-username {
+  font-weight: 600;
+  color: var(--coffee-brown);
+}
+
+.user-info-email {
+  color: var(--sepia-brown);
+  font-size: 0.95rem;
+}
+
+.user-info-id {
+    font-size: 0.8rem;
+    color: var(--dusty-blue);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .user-admin-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .user-info-text {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+        width: 100%;
+    }
+
+    .user-admin-item .btn {
+        width: 100%;
+    }
+}

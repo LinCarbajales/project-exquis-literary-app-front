@@ -7,6 +7,7 @@ import Login from "../pages/login/Login";
 import UserArea from "../pages/userArea/UserArea";
 import StoriesPage from "../pages/storiesPage/StoriesPage";
 import StoryDetailPage from '../pages/storyDetailPage/StoryDetailPage';
+import AdminPanel from "../pages/adminPanel/AdminPanel";
 
 export default function AppRoutes () {
     return (
@@ -18,6 +19,7 @@ export default function AppRoutes () {
           <Route path="/collaborate" element={<CollaboratePage />} />
           <Route path="/stories" element={<StoriesPage />} />
           <Route path="/stories/:id" element={<StoryDetailPage />} />
+          <Route path="/admin" element={<AdminPanel />} />
         </Routes>  
     )
   

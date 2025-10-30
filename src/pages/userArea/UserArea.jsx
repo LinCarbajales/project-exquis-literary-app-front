@@ -11,7 +11,7 @@ import { useAuth } from '../../context/AuthContext';
 const UserArea = () => {
   const navigate = useNavigate();
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const { updateUser } = useAuth();
+  const { updateUser, logout } = useAuth(); // 👈 Agregamos logout del contexto
 
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -49,7 +49,7 @@ const UserArea = () => {
         if (error.message?.includes('401') || error.message?.includes('403')) {
           setSubmitError('Sesión expirada. Por favor, inicia sesión de nuevo.');
           setTimeout(() => {
-            authService.logoutUser();
+            logout(); // 👈 Usamos logout del contexto
             navigate('/login');
           }, 2000);
         } else {
@@ -61,7 +61,7 @@ const UserArea = () => {
     };
 
     fetchUser();
-  }, [reset, navigate]);
+  }, [reset, navigate, logout]);
 
   // 🔹 Guardar cambios del usuario
   const onSubmit = async (formData) => {
@@ -81,7 +81,7 @@ const UserArea = () => {
       const updatedUser = await userService.updateUser(dataToSend);
       console.log('✅ Usuario actualizado:', updatedUser);
 
-      // 🔸 ACTUALIZAR EL CONTEXTO GLOBAL DE AUTENTICACIÓN
+      // 📸 ACTUALIZAR EL CONTEXTO GLOBAL DE AUTENTICACIÓN
       updateUser(updatedUser);
       
       setSuccessMessage('Datos actualizados correctamente ✨');
@@ -97,7 +97,7 @@ const UserArea = () => {
       if (errorMessage.includes('401') || errorMessage.includes('403')) {
         setSubmitError('Sesión expirada. Redirigiendo al login...');
         setTimeout(() => {
-          authService.logoutUser();
+          logout(); // 👈 Usamos logout del contexto
           navigate('/login');
         }, 2000);
       } else if (errorMessage.includes('seudónimo') || errorMessage.includes('username')) {
@@ -127,8 +127,11 @@ const UserArea = () => {
       
       alert('Tu cuenta ha sido eliminada.');
       
-      // El userService ya limpia el localStorage
-      navigate('/login');
+      // 👇 CLAVE: Usar logout del contexto para actualizar el estado global
+      await logout();
+      
+      // Redirigir a la página principal
+      navigate('/');
       
     } catch (error) {
       console.error('❌ Error al eliminar cuenta:', error);

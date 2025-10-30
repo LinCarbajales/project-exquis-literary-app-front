@@ -140,4 +140,46 @@ export const getCompletedStories = async () => {
   }
 };
 
+//
+// 👑 FUNCIONES DE ADMINISTRACIÓN
+//
+
+// 👥 Usuarios
+export const getAllUsers = async () => {
+  try {
+    const response = await api.get('/users'); 
+    console.log('✅ Usuarios cargados:', response.data.length);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error al obtener todos los usuarios:', error);
+    throw error;
+  }
+};
+
+export const deleteUser = async (userId) => {
+  try {
+    console.log('🗑️ Eliminando usuario ID:', userId);
+    const response = await api.delete(`/users/${userId}`); 
+    console.log('✅ Usuario eliminado:', userId);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error al eliminar el usuario ${userId}:`, error);
+    throw error;
+  }
+};
+
+// 📜 Historias
+export const deleteStory = async (storyId) => {
+  try {
+    console.log('🗑️ Eliminando historia ID:', storyId);
+    const response = await api.delete(`/stories/${storyId}`); 
+    console.log('✅ Historia eliminada:', storyId);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Error al eliminar la historia ${storyId}:`, error);
+    throw error;
+  }
+};
+
+
 export default api;
