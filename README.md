@@ -165,10 +165,8 @@ All backend logic and endpoints are detailed in the [Exquis Backend Repository](
 ## 🗺️ Roadmap
 ### Planned Enhancements
 * User profile customization (avatar, bio)
-* Improved mobile layout
-* Light/Dark mode toggle
 * Social features (follow users, comments)
-* Internationalization (i18n)
+* Internationalization
 
 ---
 
