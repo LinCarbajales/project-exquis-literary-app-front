@@ -1,0 +1,121 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 36, 22, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: var(--paper-white);
+  border: 2px solid var(--border-medium);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 8px 40px var(--shadow-heavy);
+  position: relative;
+  animation: slideUp 0.4s ease;
+  font-family: 'Crimson Text', serif;
+  color: var(--ink-black);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+  font-family: 'Kalam', cursive;
+  font-size: 1.8rem;
+  color: var(--coffee-brown);
+  margin: 0;
+}
+
+.modal-icon {
+  font-size: 2rem;
+}
+
+.modal-body {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--sepia-brown);
+  margin-bottom: 2rem;
+}
+
+.modal-body p {
+  margin-bottom: 1rem;
+}
+
+.modal-body ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.modal-body li {
+  margin-bottom: 0.5rem;
+}
+
+.modal-close {
+  display: block;
+  margin: 0 auto;
+  padding: 0.8rem 2rem;
+  background: var(--autumn-gradient);
+  color: var(--paper-white);
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px var(--shadow-medium);
+}
+
+.modal-close:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px var(--shadow-heavy);
+}
+
+.modal-link {
+  background: none;
+  border: none;
+  color: var(--coffee-brown);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+}
+
+.modal-link:hover {
+  color: var(--vintage-red);
+  text-decoration: underline;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.5rem;
+  }
+}

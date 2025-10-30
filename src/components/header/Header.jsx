@@ -157,12 +157,6 @@ const Header = () => {
             </>
           ) : (
             <>
-              <Link to="/about" className="nav-link">
-                ¿Cómo funciona?
-              </Link>
-              <Link to="/examples" className="nav-link">
-                Ejemplos
-              </Link>
               <Link to="/login" className="nav-link">
                 Iniciar Sesión
               </Link>
@@ -231,12 +225,6 @@ const Header = () => {
               <div className="nav-mobile-links">
                 <Link to="/" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>🏠</span> Inicio
-                </Link>
-                <Link to="/about" className="mobile-nav-link" onClick={closeMobileMenu}>
-                  <span>❓</span> ¿Cómo funciona?
-                </Link>
-                <Link to="/examples" className="mobile-nav-link" onClick={closeMobileMenu}>
-                  <span>📖</span> Ejemplos
                 </Link>
                 <Link to="/login" className="mobile-nav-link" onClick={closeMobileMenu}>
                   <span>🔑</span> Iniciar Sesión
