@@ -190,6 +190,10 @@ const CollaboratePage = () => {
           </div>
         )}
 
+        <div className="collaboration-number-banner">
+          Colaboración {story.currentCollaborationNumber} de {story.extension}
+        </div>
+
         <form className="collaborate-form" onSubmit={handleSubmit}>
           <textarea
             className="collaborate-textarea"
