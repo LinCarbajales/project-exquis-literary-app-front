@@ -8,6 +8,8 @@ import UserArea from "../pages/userArea/UserArea";
 import StoriesPage from "../pages/storiesPage/StoriesPage";
 import StoryDetailPage from '../pages/storyDetailPage/StoryDetailPage';
 import AdminPanel from "../pages/adminPanel/AdminPanel";
+import VerifyEmail from "../pages/verifyEmail/VerifyEmail";
+import ResendVerification from "../pages/resendVerification/ResendVerification"
 
 export default function AppRoutes () {
     return (
@@ -20,6 +22,8 @@ export default function AppRoutes () {
           <Route path="/stories" element={<StoriesPage />} />
           <Route path="/stories/:id" element={<StoryDetailPage />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/verify-email/:token" element={<VerifyEmail />} />
+          <Route path="/resend-verification" element={<ResendVerification />} />
         </Routes>  
     )
   

@@ -451,36 +451,80 @@
   .register-button {
     font-size: 1.1rem;
   }
-}
 
-/* Accesibilidad */
-.register-input:focus,
-.register-checkbox:focus,
-.register-button:focus {
-  outline: 2px solid var(--autumn-gold);
-  outline-offset: 2px;
-}
+  /* Estilos para la pantalla de verificación en Register */
+  .verification-container {
+    max-width: 600px;
+    text-align: center;
+  }
 
-/* Estados de validación visual */
-.register-input:valid:not(:placeholder-shown):not(.register-input-error) {
-  border-color: var(--success-green);
-  background: rgba(124, 152, 133, 0.05);
-}
+  .verification-content {
+    padding: 3rem 2rem;
+  }
 
-/* Efectos hover mejorados */
-.register-field:focus-within .register-label {
-  color: var(--autumn-gold);
-  transition: color 0.3s ease;
-}
+  .verification-icon {
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    animation: bounce 1s ease-in-out;
+  }
 
-/* Centrar los campos del login */
-.login-centered {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  .verification-title {
+    font-size: 2rem;
+    color: #2d3748;
+    margin-bottom: 1rem;
+  }
 
-.login-centered .register-field {
-  width: 80%;
-  max-width: 400px;
+  .verification-text {
+    font-size: 1.1rem;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+  }
+
+  .verification-email {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #6b46c1;
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background: #f7fafc;
+    border-radius: 8px;
+    word-break: break-all;
+  }
+
+  .verification-instructions {
+    font-size: 1rem;
+    color: #718096;
+    margin: 1.5rem 0;
+    line-height: 1.6;
+  }
+
+  .verification-tips {
+    background: #fff5f5;
+    border-left: 4px solid #f56565;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+  }
+
+  .verification-tip {
+    font-size: 0.9rem;
+    color: #742a2a;
+    margin: 0;
+    text-align: left;
+  }
+
+  .verification-actions {
+    margin-top: 2rem;
+  }
+
+  .verification-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
 }
