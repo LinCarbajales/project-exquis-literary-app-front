@@ -16,11 +16,6 @@ const Footer = () => {
                 <span className="quill">🖋️</span>
               </div>
             </a>
-            <div className="social-links">
-              <a href="#" className="social-link" aria-label="Twitter"><span>🐦</span></a>
-              <a href="#" className="social-link" aria-label="Instagram"><span>📷</span></a>
-              <a href="#" className="social-link" aria-label="GitHub"><span>💻</span></a>
-            </div>
           </div>
 
           {/* Reemplazamos los enlaces directos por el componente InfoModals */}
