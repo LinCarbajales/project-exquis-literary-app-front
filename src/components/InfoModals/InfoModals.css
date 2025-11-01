@@ -65,18 +65,23 @@
 .modal-close {
   display: block;
   margin: 0 auto;
-  padding: 0.8rem 2rem;
-  background: var(--autumn-gradient);
-  color: var(--paper-white);
-  border: none;
+  padding: 1rem 4rem;
+  background: #6f4e37 !important;
+  color: #faf8f3 !important;
+  border: 2px solid #6f4e37;
   border-radius: 25px;
   font-weight: 600;
+  font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px var(--shadow-medium);
+  font-family: 'Crimson Text', serif;
+  min-width: 180px;
 }
 
 .modal-close:hover {
+  background: var(--vintage-red);
+  border-color: var(--vintage-red);
   transform: translateY(-2px);
   box-shadow: 0 6px 25px var(--shadow-heavy);
 }

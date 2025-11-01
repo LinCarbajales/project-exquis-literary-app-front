@@ -13,7 +13,7 @@ const InfoModals = () => {
       {/* El contenedor .footer-nav-simple (en Footer.jsx) gestionará ahora la distribución. */}
       <button className="meta-link" onClick={() => setActiveModal('about')}>Acerca de</button>
       <button className="meta-link" onClick={() => setActiveModal('how')}>¿Cómo funciona?</button>
-      <a href="/contact" className="meta-link">Contacto</a>
+      <a href="mailto:programacionplaceholder@gmail.com" className="meta-link">Contacto</a>
 
       {/* Modal: Acerca de */}
       {activeModal === 'about' && (

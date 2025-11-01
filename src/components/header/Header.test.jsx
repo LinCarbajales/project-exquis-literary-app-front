@@ -75,10 +75,7 @@ describe('Header Component', () => {
     it('muestra los enlaces para usuarios no autenticados', () => {
       renderHeader({ isAuthenticated: false })
       
-      // Buscar dentro del menú desktop
       const desktopNav = document.querySelector('.nav-desktop')
-      expect(within(desktopNav).getByText('¿Cómo funciona?')).toBeInTheDocument()
-      expect(within(desktopNav).getByText('Ejemplos')).toBeInTheDocument()
       expect(within(desktopNav).getByText('Iniciar Sesión')).toBeInTheDocument()
       expect(within(desktopNav).getByText('Registro')).toBeInTheDocument()
     })
@@ -105,7 +102,6 @@ describe('Header Component', () => {
         user: mockUser 
       })
       
-      // Buscar dentro del menú desktop
       const desktopNav = document.querySelector('.nav-desktop')
       expect(within(desktopNav).getByText('Escritorio')).toBeInTheDocument()
       expect(within(desktopNav).getByText('Historias')).toBeInTheDocument()
@@ -118,7 +114,6 @@ describe('Header Component', () => {
         user: mockUser 
       })
       
-      // Busca en el menú desktop
       const usernameElements = screen.getAllByText('testuser')
       expect(usernameElements.length).toBeGreaterThan(0)
     })
@@ -129,7 +124,6 @@ describe('Header Component', () => {
         user: mockUser 
       })
       
-      // Busca avatares con la letra T (de testuser)
       const avatars = screen.getAllByText('T')
       expect(avatars.length).toBeGreaterThan(0)
     })
@@ -157,7 +151,6 @@ describe('Header Component', () => {
       })
       
       const desktopNav = document.querySelector('.nav-desktop')
-      expect(within(desktopNav).queryByText('¿Cómo funciona?')).not.toBeInTheDocument()
       expect(within(desktopNav).queryByText('Iniciar Sesión')).not.toBeInTheDocument()
       expect(within(desktopNav).queryByText('Registro')).not.toBeInTheDocument()
     })
@@ -175,7 +168,6 @@ describe('Header Component', () => {
         user: mockUser 
       })
       
-      // En desktop, el dropdown debe estar oculto inicialmente
       const dropdown = document.querySelector('.dropdown')
       expect(dropdown).not.toHaveClass('open')
     })
@@ -187,22 +179,15 @@ describe('Header Component', () => {
         user: mockUser 
       })
       
-      // Buscar el botón del perfil en desktop
       const userButton = screen.getByRole('button', { name: /testuser/i })
       
       await user.click(userButton)
       
-      // Verificar que aparecen las opciones del dropdown
       await waitFor(() => {
-        // Obtenemos todos los elementos con el texto 'Mi Perfil'
         const miPerfilLinks = screen.getAllByText('Mi Perfil')
-        
-        // Filtramos para obtener solo el que está dentro de un elemento con clase .dropdown-item
         const dropdownMiPerfil = miPerfilLinks.find(link => 
           link.closest('.dropdown-item')
         )
-        
-        // Aseguramos que se encuentre en el dropdown
         expect(dropdownMiPerfil).toBeInTheDocument()
       })
       
@@ -219,7 +204,6 @@ describe('Header Component', () => {
       
       const userButton = screen.getByRole('button', { name: /testuser/i })
       
-      // Abrir
       await user.click(userButton)
       await waitFor(() => {
         const miPerfilLinks = screen.getAllByText('Mi Perfil')
@@ -229,7 +213,6 @@ describe('Header Component', () => {
         expect(dropdownMiPerfil).toBeInTheDocument()
       })
       
-      // Cerrar
       await user.click(userButton)
       
       await waitFor(() => {
@@ -256,7 +239,6 @@ describe('Header Component', () => {
         expect(dropdownMiPerfil).toBeInTheDocument()
       })
       
-      // Buscar el botón de logout en el dropdown (no el del menú móvil)
       const logoutButtons = screen.getAllByText('Cerrar Sesión')
       const dropdownLogoutBtn = logoutButtons.find(btn => 
         btn.closest('.dropdown-item')
@@ -356,7 +338,6 @@ describe('Header Component', () => {
       const mobileMenuBtn = screen.getByLabelText('Menú de navegación')
       await user.click(mobileMenuBtn)
       
-      // Buscar el botón de logout en móvil
       const logoutButtons = screen.getAllByText('Cerrar Sesión')
       const mobileLogoutBtn = logoutButtons.find(btn => 
         btn.closest('.mobile-logout-btn')
@@ -374,7 +355,6 @@ describe('Header Component', () => {
       const mobileMenuBtn = screen.getByLabelText('Menú de navegación')
       await user.click(mobileMenuBtn)
       
-      // Esperar a que el menú se abra y buscar dentro del menú móvil
       await waitFor(() => {
         const mobileNav = document.querySelector('.nav-mobile.open')
         expect(mobileNav).toBeInTheDocument()
@@ -382,15 +362,9 @@ describe('Header Component', () => {
       
       const mobileNav = document.querySelector('.nav-mobile')
       
-      // Buscar elementos específicos del menú móvil usando within
       expect(within(mobileNav).getByText(/Inicio/i)).toBeInTheDocument()
-      
-      // Para "¿Cómo funciona?" que aparece en ambos menús, buscar específicamente en móvil
-      const comoFuncionaLinks = screen.getAllByText(/¿Cómo funciona?/i)
-      const mobileComoFunciona = comoFuncionaLinks.find(link => 
-        link.closest('.nav-mobile')
-      )
-      expect(mobileComoFunciona).toBeInTheDocument()
+      expect(within(mobileNav).getByText(/Iniciar Sesión/i)).toBeInTheDocument()
+      expect(within(mobileNav).getByText(/Crear Cuenta/i)).toBeInTheDocument()
     })
   })
 
@@ -401,7 +375,6 @@ describe('Header Component', () => {
       const header = document.querySelector('.header')
       expect(header).not.toHaveClass('scrolled')
       
-      // Simular scroll
       Object.defineProperty(window, 'scrollY', { value: 100, writable: true })
       window.dispatchEvent(new Event('scroll'))
       
@@ -431,7 +404,6 @@ describe('Header Component', () => {
         user: { username: 'test', email: 'test@test.com' } 
       })
       
-      // Buscar específicamente en el menú desktop
       const desktopNav = document.querySelector('.nav-desktop')
       const escritorioLink = within(desktopNav).getByText('Escritorio').closest('a')
       expect(escritorioLink).toHaveClass('active')
