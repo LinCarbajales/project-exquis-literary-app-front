@@ -28,12 +28,9 @@ const Footer = () => {
       <div className="footer-bottom">
         <div className="footer-bottom-content">
           <div className="footer-copyright">
-            <p>&copy; {currentYear} Exquis. Proyecto de bootcamp con ❤️</p>
+            <p>&copy; {currentYear} Exquis - Plataforma de escritura colaborativa</p>
           </div>
           <div className="footer-meta">
-            <a href="/terms" className="meta-link">Términos de Uso</a>
-            <a href="/privacy" className="meta-link">Política de Privacidad</a>
-            <span className="meta-divider">•</span>
             <span className="version">v1.0.0</span>
           </div>
         </div>
